@@ -247,12 +247,17 @@ TrajectorySegmentBuilder::addGroup (TempTrajectory const & traj,
   
   TempTrajectoryContainer updatedTrajectories; updatedTrajectories.reserve(2);
   if ( traj.measurements().empty() ) {
+<<<<<<< HEAD
     if ( theMaxCand == 1 ) {
       auto && firstMeasurements = unlockedMeasurements(begin->measurements());
       if (!firstMeasurements.empty()) updateCandidatesWithBestHit(traj,std::move(firstMeasurements.front()),updatedTrajectories);
     } else {
       updateCandidates(traj,begin->measurements(),updatedTrajectories);
     }
+=======
+    vector<TM> const & firstMeasurements = unlockedMeasurements(begin->measurements());//not used???fixme gc
+    updateCandidates(traj,begin->measurements(),updatedTrajectories);
+>>>>>>> b27f9a6... Jet core dedicated tracking
     if unlikely(theDbgFlg) cout << "TSB::addGroup : updating with first group - "
 				<< updatedTrajectories.size() << " trajectories" << endl;
   }
