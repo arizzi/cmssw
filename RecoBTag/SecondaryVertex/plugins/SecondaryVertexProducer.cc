@@ -45,7 +45,7 @@
 #include "RecoBTag/SecondaryVertex/interface/VertexSorting.h"
 
 #include "DataFormats/GeometryVector/interface/VectorUtil.h"
-
+#define VTXDEBUG
 using namespace reco;
 
 namespace {
@@ -281,8 +281,9 @@ void SecondaryVertexProducer::produce(edm::Event &event,
 		trackIPTagInfos->begin(); iterJets != trackIPTagInfos->end();
 		++iterJets) {
 		std::vector<SecondaryVertexTagInfo::IndexedTrackData> trackData;
-//		      std::cout << "Jet " << iterJets-trackIPTagInfos->begin() << std::endl; 
-
+#ifdef VTXDEBUG
+		      std::cout << "################ Jet " << iterJets-trackIPTagInfos->begin() << std::endl; 
+#endif
 		const Vertex &pv = *iterJets->primaryVertex();
 
 		std::set<TransientTrack> primaries;
@@ -471,12 +472,19 @@ void SecondaryVertexProducer::produce(edm::Event &event,
              }else{
                   for(size_t iExtSv = 0; iExtSv < extSecVertex->size(); iExtSv++){
 		      const reco::Vertex & extVertex = (*extSecVertex)[iExtSv];
-//    	              GlobalVector vtxDir = GlobalVector(extVertex.p4().X(),extVertex.p4().Y(),extVertex.p4().Z());
-//                     if(Geom::deltaR(extVertex.position() - pv.position(), vtxDir)>0.2) continue; //pointing angle
-//		      std::cout << " dR " << iExtSv << " " << Geom::deltaR( ( extVertex.position() - pv.position() ), jetDir ) << "eta: " << ( extVertex.position() - pv.position()).eta() << " vs " << jetDir.eta() << " phi: "  << ( extVertex.position() - pv.position()).phi() << " vs  " << jetDir.phi() <<  std::endl; 
+    	              GlobalVector vtxDir = GlobalVector(extVertex.p4().X(),extVertex.p4().Y(),extVertex.p4().Z());
+		      float gamma = (extVertex.position() - pv.position()).R()/0.05;
+		      float gamma1 = extVertex.p4().Gamma();
+//                     if(Geom::deltaR(extVertex.position() - pv.position(), vtxDir)>1./gamma) continue; //pointing angle
+#ifdef VTXDEBUG
+		      std::cout << " dR " << iExtSv << " " << Geom::deltaR( ( extVertex.position() - pv.position() ), jetDir ) << "eta: " << ( extVertex.position() - pv.position()).eta() << " vs " << jetDir.eta() << " phi: "  << ( extVertex.position() - pv.position()).phi() << " vs  " << jetDir.phi() <<  " mass: " << extVertex.p4().M() <<std::endl; 
+		      std::cout << "Pointing dR: " << Geom::deltaR(extVertex.position() - pv.position(), vtxDir) << " vs 1/gamma = "<< 1./gamma << " DLen = " << (extVertex.position() - pv.position()).R() << " gamma =  " << gamma << " gamma1 = " << gamma1 <<  std::endl;
+#endif
 	              if( Geom::deltaR( ( extVertex.position() - pv.position() ), jetDir ) >  extSVDeltaRToJet || extVertex.p4().M() < 0.3)
                 	continue;
-//		      std::cout << " SV added " << iExtSv << std::endl; 
+#ifdef VTXDEBUG
+		      std::cout << " SV added " << iExtSv << std::endl; 
+#endif
  		      extAssoCollection.push_back( extVertex );
                    }
                    SVBuilder svBuilder(pv, jetDir, withPVError);
@@ -487,7 +495,9 @@ void SecondaryVertexProducer::produce(edm::Event &event,
 
 
                  }
-//		std::cout << "size: " << SVs.size() << std::endl; 
+#ifdef VTXDEBUG
+		std::cout << "size: " << SVs.size() << std::endl; 
+#endif
 		gtPred.reset();
 		ghostTrack.reset();
 		gtStates.clear();

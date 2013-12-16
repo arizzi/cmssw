@@ -52,6 +52,8 @@
 #include "RecoBTag/TrackProbability/interface/HistogramProbabilityEstimator.h"
 #include "RecoBTag/ImpactParameter/plugins/TrackIPProducer.h"
 
+#include "Math/GenVector/VectorUtil.h"
+
 
 using namespace std;
 using namespace reco;
@@ -81,7 +83,7 @@ TrackIPProducer::TrackIPProducer(const edm::ParameterSet& iConfig) :
   m_directionWithTracks     = m_config.getParameter<bool>("jetDirectionUsingTracks");
   m_directionWithGhostTrack = m_config.getParameter<bool>("jetDirectionUsingGhostTrack");
   m_useTrackQuality         = m_config.getParameter<bool>("useTrackQuality");
-
+  m_dRMinThreshold         = m_config.getParameter<double>("dRMinThreshold");
   if (m_computeGhostTrack)
     produces<reco::TrackCollection>("ghostTracks");
   produces<reco::TrackIPTagInfoCollection>();
@@ -158,6 +160,41 @@ TrackIPProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
      TrackRefVector selectedTracks;
      vector<TransientTrack> transientTracks;
+     GlobalVector direction(jetMomentum.x(), jetMomentum.y(), jetMomentum.z());
+
+  /*****   std::multimap<float,TrackRef> best4;
+         for(TrackRefVector::const_iterator itTrack = tracks.begin();
+         itTrack != tracks.end(); ++itTrack) {
+       const Track & track = **itTrack;
+       TransientTrack transientTrack = builder->build(*itTrack);
+
+       if (track.pt() > m_cutMinPt &&
+           track.hitPattern().numberOfValidHits() >= m_cutTotalHits &&         // min num tracker hits
+           track.hitPattern().numberOfValidPixelHits() >= m_cutPixelHits &&
+           track.normalizedChi2() < m_cutMaxChiSquared &&
+           std::abs(track.dxy(pv->position())) < m_cutMaxTIP &&
+           std::abs(track.dz(pv->position())) < m_cutMaxLIP 
+          ) {
+
+	 best4.insert(std::pair<float,TrackRef>(IPTools::signedImpactParameter3D(transientTrack, direction, *pv).second.significance(),*itTrack));
+       }
+     }
+       std::cout << " "  << jetMomentum.eta() << " " << jetMomentum.phi() <<  std::endl; 	
+       jetMomentum *= 0;
+       size_t ii=0;
+       for(std::multimap<float,TrackRef>::reverse_iterator itTrack = best4.rbegin();
+           itTrack != best4.rend(); ++itTrack)
+       {
+           if(itTrack->first < 40)
+           {
+ 	   ii++;
+           jetMomentum += (itTrack->second)->momentum();
+           }
+           if(ii>6) break;	
+	   std::cout << itTrack->first <<" "  << jetMomentum.eta() << " " << jetMomentum.phi() <<  std::endl; 	
+       }
+*/
+
 
      for(TrackRefVector::const_iterator itTrack = tracks.begin();
          itTrack != tracks.end(); ++itTrack) {
@@ -170,18 +207,25 @@ TrackIPProducer::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
                " chi2 " <<  track.normalizedChi2()<<
                " #pixel " <<    track.hitPattern().numberOfValidPixelHits()<< endl;
 */
+////       float dR = ROOT::Math::VectorUtil::DeltaR(jetMomentum,track.momentum());
+////       float dRMax= 6. * 5./it->first->p();
+////       if(dRMax < m_dRMinThreshold) dRMax=m_dRMinThreshold;
+
        if (track.pt() > m_cutMinPt &&
            track.hitPattern().numberOfValidHits() >= m_cutTotalHits &&         // min num tracker hits
            track.hitPattern().numberOfValidPixelHits() >= m_cutPixelHits &&
            track.normalizedChi2() < m_cutMaxChiSquared &&
            std::abs(track.dxy(pv->position())) < m_cutMaxTIP &&
-           std::abs(track.dz(pv->position())) < m_cutMaxLIP) {
+           std::abs(track.dz(pv->position())) < m_cutMaxLIP 
+////           &&	   dR < dRMax
+ 	  ) {
          selectedTracks.push_back(*itTrack);
+
          transientTracks.push_back(transientTrack);
        }
      }
 
-     GlobalVector direction(jetMomentum.x(), jetMomentum.y(), jetMomentum.z());
+//direction = GlobalVector(jetMomentum.x(), jetMomentum.y(), jetMomentum.z());
 
      auto_ptr<GhostTrack> ghostTrack;
      TrackRef ghostTrackRef;

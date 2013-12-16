@@ -15,7 +15,7 @@
 #include "RecoBTag/SecondaryVertex/interface/TrackKinematics.h"
 #include "RecoBTag/SecondaryVertex/interface/V0Filter.h"
 #include "RecoBTag/SecondaryVertex/interface/VertexFilter.h"
-
+#define VTXDEBUG
 using namespace reco; 
 
 VertexFilter::VertexFilter(const edm::ParameterSet &params) :
@@ -76,7 +76,17 @@ bool VertexFilter::operator () (const Vertex &pv,
 		return false;
 
 	// flight distance limits (value and significance, 2d and 3d)
-
+#ifdef VTXDEBUG
+	std::cout << " ok with multiplicity " << std::endl;
+	std::cout << sv.dist2d().value()        << " <  " << distVal2dMin << " or " << 
+	    sv.dist2d().value()           << ">  " <<  distVal2dMax  << " or " <<
+	    sv.dist3d().value()          << " <  " <<  distVal3dMin  << " or " <<
+	    sv.dist3d().value()          << " >  " <<  distVal3dMax  << " or " <<
+	    sv.dist2d().significance()    << "<  " <<  distSig2dMin  << " or " <<
+	    sv.dist2d().significance()    << ">  " <<  distSig2dMax  << " or " <<
+	    sv.dist3d().significance()    << "<  " <<  distSig3dMin  << " or " <<
+	    sv.dist3d().significance()   << " >  " <<  distSig3dMax << std::endl;
+#endif
 	if (sv.dist2d().value()        < distVal2dMin ||
 	    sv.dist2d().value()        > distVal2dMax ||
 	    sv.dist3d().value()        < distVal3dMin ||
@@ -86,7 +96,9 @@ bool VertexFilter::operator () (const Vertex &pv,
 	    sv.dist3d().significance() < distSig3dMin ||
 	    sv.dist3d().significance() > distSig3dMax)
 		return false;
-
+#ifdef VTXDEBUG
+	std::cout << " here " << std::endl;
+#endif
 	// SV direction filter
 
 	if (Geom::deltaR(sv.position() - pv.position(),
@@ -105,14 +117,18 @@ bool VertexFilter::operator () (const Vertex &pv,
 		return false;
 
 	// find shared tracks between PV and SV
-
+#ifdef VTXDEBUG
+	std::cout << " here ok" << std::endl;
+#endif
 	if (fracPV < 1.0) {
 		unsigned int sharedTracks =
 			computeSharedTracks(pv, svTracks, minTrackWeight);
 		if ((double)sharedTracks / svTracks.size() > fracPV)
 			return false;
 	}
-
+#ifdef VTXDEBUG
+	std::cout << " here ok ok" << std::endl;
+#endif
 	// check for V0 vertex
 
 	if (sv.hasRefittedTracks())

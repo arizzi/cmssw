@@ -41,6 +41,7 @@ class TrackIPProducer : public edm::EDProducer {
     bool  m_directionWithTracks;
     bool  m_directionWithGhostTrack;
     bool  m_useTrackQuality;
+    double m_dRMinThreshold;
 };
 #endif
 

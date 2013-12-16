@@ -15,4 +15,5 @@ impactParameterTagInfos = cms.EDProducer("TrackIPProducer",
     jetDirectionUsingTracks = cms.bool(False),
     jetDirectionUsingGhostTrack = cms.bool(False),
     useTrackQuality = cms.bool(False),
+    dRMinThreshold=cms.double(0.5), # same as default
 )
