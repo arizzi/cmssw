@@ -114,6 +114,8 @@ pat::PATElectronSlimmer::produce(edm::Event & iEvent, const edm::EventSetup & iS
             } else {
                 electron.refToOrig_ = reco::CandidatePtr(pc.id());
             }
+            // reset this
+            electron.pfCandidateRef_ = reco::PFCandidateRef(); 
        }
 
     }
