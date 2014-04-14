@@ -256,8 +256,13 @@ TrajectorySegmentBuilder::addGroup (TempTrajectory const & traj,
     }
 =======
     vector<TM> const & firstMeasurements = unlockedMeasurements(begin->measurements());//not used???fixme gc
+<<<<<<< HEAD
     updateCandidates(traj,begin->measurements(),updatedTrajectories);
 >>>>>>> b27f9a6... Jet core dedicated tracking
+=======
+    updateCandidates(traj,firstMeasurements,updatedTrajectories);
+    //updateCandidates(traj,begin->measurements(),updatedTrajectories);
+>>>>>>> f608c70... fix compilation errors
     if unlikely(theDbgFlg) cout << "TSB::addGroup : updating with first group - "
 				<< updatedTrajectories.size() << " trajectories" << endl;
   }
