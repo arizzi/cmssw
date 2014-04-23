@@ -8,6 +8,7 @@ slimmedJets = cms.EDProducer("PATJetSlimmer",
    dropTrackRefs = cms.string("1"),
    dropSpecific = cms.string("0"),
    dropTagInfos = cms.string("1"),
+   dropSpecific = cms.bool(False),
 )
 slimmedJetsCA8 = cms.EDProducer("PATJetSlimmer",
    src = cms.InputTag("selectedPatJetsCA8"),
