@@ -6,27 +6,16 @@ import FWCore.ParameterSet.Config as cms
 
 # REMOVE HITS ASSIGNED TO GOOD TRACKS FROM PREVIOUS ITERATIONS
 
-detachedTripletStepClustersFromJetCore = cms.EDProducer("TrackClusterRemover",
-    clusterLessSolution = cms.bool(True),
-    trajectories = cms.InputTag("jetCoreRegionalStepTracks"),
-    overrideTrkQuals = cms.InputTag('jetCoreRegionalStepSelector','jetCoreRegionalStep'),
-    TrackQuality = cms.string('highPurity'),
-    minNumberOfLayersWithMeasBeforeFiltering = cms.int32(0),
-    pixelClusters = cms.InputTag("siPixelClusters"),
-    stripClusters = cms.InputTag("siStripClusters"),
-    doStripChargeCheck = cms.bool(True),
-    stripRecHits = cms.string('siStripMatchedRecHits'),
-    Common = cms.PSet(
-        maxChi2 = cms.double(9.0)
-    )
-)
-
 detachedTripletStepClusters = cms.EDProducer("TrackClusterRemover",
     clusterLessSolution = cms.bool(True),
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
     oldClusterRemovalInfo = cms.InputTag("detachedTripletStepClustersFromJetCore"),
 >>>>>>> a6a6ffd... remove clusters from JetCoreRegionalStep
+=======
+    oldClusterRemovalInfo = cms.InputTag("initialStepClusters"),
+>>>>>>> 1d686f6... Revert "remove clusters from JetCoreRegionalStep"
     trajectories = cms.InputTag("initialStepTracks"),
     overrideTrkQuals = cms.InputTag('initialStep'),
     TrackQuality = cms.string('highPurity'),
@@ -237,8 +226,7 @@ detachedTripletStep = RecoTracker.FinalTrackSelectors.trackListMerger_cfi.trackL
     writeOnlyTrkQuals=cms.bool(True)
 )
 
-DetachedTripletStep = cms.Sequence(detachedTripletStepClustersFromJetCore*
-                                   detachedTripletStepClusters*
+DetachedTripletStep = cms.Sequence(detachedTripletStepClusters*
                                    detachedTripletStepSeedLayers*
                                    detachedTripletStepSeeds*
                                    detachedTripletStepTrackCandidates*
