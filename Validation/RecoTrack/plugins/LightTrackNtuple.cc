@@ -133,14 +133,14 @@ void LightTrackNtuple::produce(edm::Event& event, const edm::EventSetup& setup)
 
    for (std::size_t index = 0; index < TPCollection->size(); ++index){
 	   TrackingParticleRef trackingParticle(TPCollection, index);
-	   if(trackingParticle->p4().Pt() < 1 || trackingParticle->matchedHit() < 5 || trackingParticle->status() < 0) continue;
+	   if(trackingParticle->p4().Pt() < 1 || trackingParticle->numberOfTrackerLayers() < 5 || trackingParticle->status() < 0) continue;
            tpc.push_back(edm::Ref<TrackingParticleCollection>(TPCollection,index));
     }
 
    reco::SimToRecoCollection p = myAssociator->associateSimToReco(tc,tpc,&event,&setup );
    for (std::size_t index = 0; index < TPCollection->size(); ++index){
 	   TrackingParticleRef trackingParticle(TPCollection, index);
-	   if(trackingParticle->p4().Pt() < 1 || trackingParticle->matchedHit() < 5 || trackingParticle->status() < 0) continue;
+	   if(trackingParticle->p4().Pt() < 1 || trackingParticle->numberOfTrackerLayers() < 5 || trackingParticle->status() < 0) continue;
 	   float dr=99; 
 	   float jetpt=0;	
 	   for(edm::View<reco::Jet>::const_iterator it = jets.begin() ; it != jets.end() ; it++)
@@ -174,7 +174,7 @@ void LightTrackNtuple::produce(edm::Event& event, const edm::EventSetup& setup)
 				v[11]=track->numberOfValidHits();
 				v[12]=dr;
 				v[13]=jetpt;
-				v[14]=trackingParticle->matchedHit();
+				v[14]=trackingParticle->numberOfTrackerLayers();
 				v[15]=track->numberOfLostHits();
 				v[16]=trackingParticle->vertex().rho();
 				v[17]=event.eventAuxiliary().event();
@@ -207,7 +207,7 @@ void LightTrackNtuple::produce(edm::Event& event, const edm::EventSetup& setup)
 		   v[11]=-999;
 		   v[12]=   dr;
 		   v[13]=jetpt;
-		   v[14]=trackingParticle->matchedHit();
+		   v[14]=trackingParticle->numberOfTrackerLayers();
 		   v[15]=-999;
 		   v[16]=trackingParticle->vertex().rho();
 				v[17]=event.eventAuxiliary().event();
