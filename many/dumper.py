@@ -45,7 +45,16 @@ process.p = cms.Path(process.simHitTPAssocProducer*process.dump)
 
 
 process.PoolSource.fileNames = [
-"file:trk.root"
+"file:trk_00.root",
+"file:trk_01.root",
+"file:trk_02.root",
+"file:trk_03.root",
+"file:trk_04.root",
+"file:trk_05.root",
+"file:trk_06.root",
+"file:trk_07.root",
+"file:trk_08.root",
+"file:trk_09.root"
 ]
 
 
