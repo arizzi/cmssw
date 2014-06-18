@@ -1,3 +1,4 @@
+#define EDM_ML_DEBUG
 #include "RecoTracker/CkfPattern/interface/GroupedCkfTrajectoryBuilder.h"
 #include "TrajectorySegmentBuilder.h"
 
@@ -349,7 +350,12 @@ GroupedCkfTrajectoryBuilder::groupedLimitedCandidates (const TrajectorySeed& see
 
       LogDebug("CkfPattern")<<"newCand(1): after advanced one layer:\n"<<PrintoutHelper::dumpCandidates(newCand);
 
+      std::cout<< "newCand(1): after advanced one layer:\n"<<PrintoutHelper::dumpCandidates(newCand);
+        std::cout << "Cand SIZE is "<<newCand.size() << std::endl;
+
       if ((int)newCand.size() > theMaxCand) {
+        std::cout << "TOO LARGE " << theMaxCand << std::endl;
+
 	//ShowCand()(newCand);
 
  	sort( newCand.begin(), newCand.end(), GroupedTrajCandLess(theLostHitPenalty,theFoundHitBonus));
@@ -475,7 +481,9 @@ GroupedCkfTrajectoryBuilder::advanceOneLayer (const TrajectorySeed& seed,
   //     addToResult(traj,result,inOut);
   //     return false;
   //   }
-  
+ 
+  std::cout<<("CkfPattern ")<<whatIsTheNextStep(traj, stateAndLayers);
+ 
 #ifdef EDM_ML_DEBUG
   LogDebug("CkfPattern")<<whatIsTheNextStep(traj, stateAndLayers);
 #endif
@@ -564,13 +572,14 @@ GroupedCkfTrajectoryBuilder::advanceOneLayer (const TrajectorySeed& seed,
 					  *theUpdator,*theEstimator,
 					  theLockHits,theBestHitOnly,theMaxCand);
 
+    std::cout << ("CkfPattern")<<whatIsTheStateToUse(stateAndLayers.first,stateToUse,*il);
 #ifdef EDM_ML_DEBUG
     LogDebug("CkfPattern")<<whatIsTheStateToUse(stateAndLayers.first,stateToUse,*il);
 #endif
     
     auto && segments= layerBuilder.segments(stateToUse);
 
-    LogDebug("CkfPattern")<< "GCTB: number of segments = " << segments.size();
+    std::cout << ("CkfPattern")<< "GCTB: number of segments = " << segments.size() <<std::cout;
 
     if ( !segments.empty() )  foundSegments = true;
     
@@ -580,12 +589,13 @@ GroupedCkfTrajectoryBuilder::advanceOneLayer (const TrajectorySeed& seed,
       //
       auto const & measurements = is->measurements();
       if ( !theAlwaysUseInvalid && is!=segments.begin() && measurements.size()==1 && 
-	   (measurements.front().recHit()->getType() == TrackingRecHit::missing) )  break;
+	   (measurements.front().recHit()->getType() == TrackingRecHit::missing) ) {std::cout << "stop here" << std::endl; break;}
       
 
      //----  avoid to add the same hits more than once in the trajectory ----
       bool toBeRejected(false);
       for(auto revIt = measurements.rbegin(); revIt!=measurements.rend(); --revIt){
+	std::cout << "ID added " << revIt->recHitR().geographicalId() << std::endl;
 	// int tmpCounter(0);
 	for(auto  newTrajMeasIt = traj.measurements().rbegin(); 
 	    newTrajMeasIt != traj.measurements().rend(); --newTrajMeasIt){
@@ -601,13 +611,13 @@ GroupedCkfTrajectoryBuilder::advanceOneLayer (const TrajectorySeed& seed,
       
     rejected:;    // http://xkcd.com/292/
       if(toBeRejected){
-#ifdef VI_DEBUG
+//fdef VI_DEBUG
         cout << "WARNING: neglect candidate because it contains the same hit twice \n";
           cout << "-- discarded track's pt,eta,#found/lost: "
           << traj.lastMeasurement().updatedState().globalMomentum().perp() << " , "
           << traj.lastMeasurement().updatedState().globalMomentum().eta() << " , "
           << traj.foundHits() << '/' << traj.lostHits() << "\n";
-#endif
+//ndif
 	traj.setDPhiCacheForLoopersReconstruction(dPhiCacheForLoopersReconstruction);
 	continue; //Are we sure about this????
       }
@@ -620,10 +630,10 @@ GroupedCkfTrajectoryBuilder::advanceOneLayer (const TrajectorySeed& seed,
       traj.setDPhiCacheForLoopersReconstruction(dPhiCacheForLoopersReconstruction);
       newTraj.join(*is);
 
-      //std::cout << "DEBUG: newTraj after push found,lost: " 
-      //	  << newTraj.foundHits() << " , " 
-      //	  << newTraj.lostHits() << " , "
-      //	  << newTraj.measurements().size() << std::endl;
+      std::cout << "DEBUG: newTraj after push found,lost: " 
+      	  << newTraj.foundHits() << " , " 
+      	  << newTraj.lostHits() << " , "
+      	  << newTraj.measurements().size() << std::endl;
       
       
       
@@ -633,7 +643,7 @@ GroupedCkfTrajectoryBuilder::advanceOneLayer (const TrajectorySeed& seed,
       if ( toBeContinued(newTraj, inOut) ) {
 	// Have added one more hit to track candidate
 	
-	LogDebug("CkfPattern")<<"GCTB: adding updated trajectory to candidates: inOut="<<inOut<<" hits="<<newTraj.foundHits();
+	std::cout << ("CkfPattern")<<"GCTB: adding updated trajectory to candidates: inOut="<<inOut<<" hits="<<newTraj.foundHits();
 
 	newCand.push_back(std::move(newTraj));
 	foundNewCandidates = true;
@@ -641,7 +651,7 @@ GroupedCkfTrajectoryBuilder::advanceOneLayer (const TrajectorySeed& seed,
       else {
 	// Have finished building this track. Check if it passes cuts.
 
-	LogDebug("CkfPattern")<< "GCTB: adding completed trajectory to results if passes cuts: inOut="<<inOut<<" hits="<<newTraj.foundHits();
+	std::cout << "ttern"<< "GCTB: adding completed trajectory to results if passes cuts: inOut="<<inOut<<" hits="<<newTraj.foundHits();
 
 	moveToResult(std::move(newTraj), result, inOut);
       }

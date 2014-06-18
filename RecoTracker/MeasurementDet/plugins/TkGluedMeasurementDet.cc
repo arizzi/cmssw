@@ -115,7 +115,7 @@ bool TkGluedMeasurementDet::measurements( const TrajectoryStateOnSurface& stateO
 					  const MeasurementEstimator& est,
                                           const MeasurementTrackerEvent & data,
 					  TempMeasurements & result) const {
-  
+ std::cout << "glued" << std::endl; 
   if unlikely((!theMonoDet->isActive(data)) && (!theStereoDet->isActive(data))) {
        //     LogDebug("TkStripMeasurementDet") << " DetID " << geomDet().geographicalId().rawId() << " (glued) fully inactive";
        result.add(theInactiveHit, 0.F);
@@ -126,7 +126,7 @@ bool TkGluedMeasurementDet::measurements( const TrajectoryStateOnSurface& stateO
 
    HitCollectorForFastMeasurements collector( &fastGeomDet(), theMatcher, theCPE, stateOnThisDet, est, result);
    collectRecHits(stateOnThisDet, data, collector);
-   
+   std::cout << "Size here " << result.size()-oldSize   << std::endl;
    
    if (result.size()>oldSize) return true;
    
@@ -212,7 +212,7 @@ TkGluedMeasurementDet::collectRecHits( const TrajectoryStateOnSurface& ts, const
 	}
       } // loop on mono hit
     }
-    //GIO// std::cerr << "TkGluedMeasurementDet hits " << monoHits.size() << "/" << stereoHits.size() << " => " << result.size() << std::endl;
+     std::cout << "TkGluedMeasurementDet hits " << monoHits.size() << "/" << stereoHits.size() << " => " << result.size() << std::endl;
   }
 }
 #endif
@@ -449,6 +449,7 @@ TkGluedMeasurementDet::HitCollectorForSimpleHits::add(SiStripMatchedRecHit2D con
 {
   hasNewHits_ = true; //FIXME: see also what happens moving this within testAndPush
   std::pair<bool,double> diffEst = est_.estimate( stateOnThisDet_, hit2d);
+  std::cout << "est " << diffEst.first << " second " << diffEst.second << std::endl;  
   if (!diffEst.first) return;
   target_.emplace_back(new SiStripMatchedRecHit2D(hit2d));  // fix to use move (really needed???)
 }
@@ -463,6 +464,8 @@ TkGluedMeasurementDet::HitCollectorForSimpleHits::addProjected(const TrackingRec
   auto && vl = projectedPos(hit,*geomDet_, gdir,  cpe_);
   std::unique_ptr<ProjectedSiStripRecHit2D> phit(new ProjectedSiStripRecHit2D(vl.first,vl.second,*geomDet_, static_cast<SiStripRecHit2D const &>(hit)));
   std::pair<bool,double> diffEst = est_.estimate( stateOnThisDet_, *phit);
+  std::cout << "est " << diffEst.first << " second " << diffEst.second << std::endl;
+
   if ( diffEst.first) {
     target_.emplace_back(phit.release());
   }
@@ -489,6 +492,9 @@ TkGluedMeasurementDet::HitCollectorForFastMeasurements::add(SiStripMatchedRecHit
 {
   hasNewHits_ = true; //FIXME: see also what happens moving this within testAndPush
   std::pair<bool,double> diffEst = est_.estimate( stateOnThisDet_, hit2d);
+  std::cout << "est " << diffEst.first << " second " << diffEst.second << std::endl;
+
+
   if (!diffEst.first) return;
   target_.add(std::move(hit2d.cloneSH()),diffEst.second);
 }
@@ -520,6 +526,7 @@ TkGluedMeasurementDet::HitCollectorForFastMeasurements::addProjected(const Track
   auto && vl = projectedPos(hit,*geomDet_, gdir,  cpe_);
   auto && phit = std::make_shared<ProjectedSiStripRecHit2D> (vl.first,vl.second,*geomDet_, static_cast<SiStripRecHit2D const &>(hit));
   std::pair<bool,double> diffEst = est_.estimate( stateOnThisDet_, *phit);
+  std::cout << "est " << diffEst.first << " second " << diffEst.second << std::endl;  
   if ( diffEst.first) {
     target_.add(phit, diffEst.second);
   }

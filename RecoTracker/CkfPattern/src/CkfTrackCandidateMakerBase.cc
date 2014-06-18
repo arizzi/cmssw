@@ -209,6 +209,7 @@ namespace cms{
       // Loop over seeds
       size_t collseed_size = collseed->size(); 
       for (size_t j = 0; j < collseed_size; j++){
+        std::cout << "SEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD " << j << std::endl;
 
 	LogDebug("CkfPattern") << "======== Begin to look for trajectories from seed " << j << " ========"<<endl;
 	

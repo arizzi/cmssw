@@ -120,7 +120,7 @@ HitDoublets HitPairGeneratorFromLayerPair::doublets( const TrackingRegion& regio
 					      outerHitsMap.z[io],
 					      nSigmaPhi*outerHitsMap.drphi[io]
 					      );
-
+	
     if (phiRange.empty()) continue;
 
     const HitRZCompatibility *checkRZ = region.checkRZ(innerLayerObj.detLayer(), ohit, iSetup, outerLayerObj.detLayer(), 
@@ -131,7 +131,7 @@ HitDoublets HitPairGeneratorFromLayerPair::doublets( const TrackingRegion& regio
     if(!checkRZ) continue;
 
     Kernels<HitZCheck,HitRCheck,HitEtaCheck> kernels;
-
+	
     auto innerRange = innerHitsMap.doubleRange(phiRange.min(), phiRange.max());
     LogDebug("HitPairGeneratorFromLayerPair")<<
       "preparing for combination of: "<< innerRange[1]-innerRange[0]+innerRange[3]-innerRange[2]

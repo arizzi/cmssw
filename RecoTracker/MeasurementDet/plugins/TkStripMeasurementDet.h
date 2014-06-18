@@ -180,7 +180,7 @@ public:
     for(auto vl : vlv) {
       SiStripRecHit2D recHit(vl.first, vl.second, fastGeomDet(), cluster); 
       std::pair<bool,double> diffEst = est.estimate(ltp, recHit);
-      LogDebug("TkStripMeasurementDet")<<" chi2=" << diffEst.second;
+      std::cout << ("TkStripMeasurementDet")<<" chi2=" << diffEst.second << std::endl;
       if ( diffEst.first ) {
 	result.push_back(std::move(std::make_shared<SiStripRecHit2D>(recHit)));
 	diffs.push_back(diffEst.second);

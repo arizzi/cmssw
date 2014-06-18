@@ -93,7 +93,7 @@ void TkGluedMeasurementDet::doubleMatch(const TrajectoryStateOnSurface& ts, cons
 	TrajectoryStateOnSurface mts = fastProp(ts,geomDet().surface(),theMonoDet->geomDet().surface());
 	theMonoDet->simpleRecHits(mts,collector.estimator(),data,monoHits);
       }
-    // print("mono", mts,ts);
+//     print("mono", mts,ts);
     mf = monoHits.size();
   }
   else {
@@ -107,7 +107,7 @@ void TkGluedMeasurementDet::doubleMatch(const TrajectoryStateOnSurface& ts, cons
     if likely(!emptyStereo) {
 	TrajectoryStateOnSurface pts = fastProp(ts,geomDet().surface(),theStereoDet->geomDet().surface());
 	theStereoDet->simpleRecHits(pts,collector.estimator(),data,stereoHits);
-	// print("stereo", pts,ts);
+//	print("stereo", pts,ts);
       }
     sf = stereoHits.size();
   }
@@ -115,6 +115,7 @@ void TkGluedMeasurementDet::doubleMatch(const TrajectoryStateOnSurface& ts, cons
     theStereoDet->simpleRecHits(ts,data,stereoHits);
     emptyStereo = stereoHits.empty();
   }
+  std::cout << "TkGluedMeasurementDet hits " << monoHits.size() << "/" << stereoHits.size()  << std::endl;
 
   if (collector.filter()) {
     auto mh = monoHits.size();

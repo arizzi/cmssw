@@ -57,13 +57,13 @@ protected:
     return true;}
 
   template <class T> bool TBC(T& traj) const{
-    if (!theMaxHitsTrajectoryFilter->toBeContinued(traj)) return false;     
-    if (!theMaxLostHitsTrajectoryFilter->toBeContinued(traj)) return false;
-    if (!theMaxConsecLostHitsTrajectoryFilter->toBeContinued(traj)) return false;
-    if (!theLostHitsFractionTrajectoryFilter->toBeContinued(traj)) return false;
-    if (!theMinPtTrajectoryFilter->toBeContinued(traj)) return false;     
-    if (!theChargeSignificanceTrajectoryFilter->toBeContinued(traj)) return false;
-    if (!theLooperTrajectoryFilter->toBeContinued(traj)) return false;
+    if (!theMaxHitsTrajectoryFilter->toBeContinued(traj)) {std::cout << "fail maxhit" << std::endl; return false;    } 
+    if (!theMaxLostHitsTrajectoryFilter->toBeContinued(traj))  {std::cout << "fail losthits" << std::endl; return false;}
+    if (!theMaxConsecLostHitsTrajectoryFilter->toBeContinued(traj)) {std::cout << "fail conseclost" << std::endl;  return false;}
+    if (!theLostHitsFractionTrajectoryFilter->toBeContinued(traj)) {std::cout << "fail lostfract" << std::endl;  return false;}
+    if (!theMinPtTrajectoryFilter->toBeContinued(traj)) {std::cout << "fail minpt " << std::endl;  return false;     }
+    if (!theChargeSignificanceTrajectoryFilter->toBeContinued(traj))  {std::cout << "fail chargesig " << std::endl; return false;}
+    if (!theLooperTrajectoryFilter->toBeContinued(traj))  {std::cout << "fail looper " << std::endl; return false;}
     return true;}
 
   

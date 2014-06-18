@@ -60,6 +60,13 @@ void SeedFromConsecutiveHitsCreator::makeSeed(TrajectorySeedCollection & seedCol
   GlobalTrajectoryParameters kine;
   if (!initialKinematic(kine, hits)) return;
 
+  if(
+	(hits[0]->det()->geographicalId().rawId() == 302193680 && hits[1]->det()->geographicalId().rawId() == 302126096)	
+or	(hits[1]->det()->geographicalId().rawId() == 302193680 && hits[0]->det()->geographicalId().rawId() == 302126096)	
+     )
+	{
+//std::cout << "found" << std::endl;
+	}
   float sin2Theta = kine.momentum().perp2()/kine.momentum().mag2();
 
   CurvilinearTrajectoryError error = initialError(sin2Theta);
@@ -68,10 +75,11 @@ void SeedFromConsecutiveHitsCreator::makeSeed(TrajectorySeedCollection & seedCol
   {
      const RectangularEtaPhiTrackingRegion * etaPhiRegion =  dynamic_cast<const RectangularEtaPhiTrackingRegion *>(region);
      if(etaPhiRegion) {  
-
+//	std::cout << "in jere" << std::endl;
 	//the following completely reset the kinematics, perhaps it makes no sense and newKine=kine would do better 
    	GlobalVector direction=region->direction()/region->direction().mag();
    	GlobalVector momentum=direction*fts.momentum().mag();
+//	std::cout << "kine " << momentum.eta() << " "<<momentum.phi() << " " << momentum.perp() << "vs" << fts.momentum().eta() << " "<< fts.momentum().phi() << " " << fts.momentum().perp() << std::endl;
    	GlobalPoint position=region->origin()+5*direction;  
    	GlobalTrajectoryParameters newKine(position,momentum,fts.charge(),&fts.parameters().magneticField());
 
@@ -92,7 +100,7 @@ void SeedFromConsecutiveHitsCreator::makeSeed(TrajectorySeedCollection & seedCol
   	C[3][3] = transverseErr;
   	C[4][4] = zErr*sin2Theta + transverseErr*(1-sin2Theta);
    	CurvilinearTrajectoryError newError(C);
-  	fts =  FreeTrajectoryState(newKine,newError);
+  	fts =  FreeTrajectoryState(kine,newError);
     }
   }
 
