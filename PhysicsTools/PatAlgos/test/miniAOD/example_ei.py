@@ -1,21 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("S2")
-from FWCore.ParameterSet.VarParsing import VarParsing
-options = VarParsing ('analysis')
-options.register ('n',
-                                  0,
-                                  VarParsing.multiplicity.singleton,
-                                  VarParsing.varType.int,
-                                  "njob")
-options.parseArguments()
-
-process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(-1)
-)
-
-
-
 # Input source
 process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring(),
@@ -43,14 +28,11 @@ files=[
 '/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FEDD889D-89FC-E311-B895-0025905A60A6.root'
 ]
 for f in files:
-  #pref.append("root://cms-xrd-global.cern.ch/"+f)
-  pref.append("file:/gpfs/ddn/srm/cms/"+f)
+  pref.append("root://cms-xrd-global.cern.ch/"+f)
 
-process.source.fileNames=[pref[options.n]]
-print options.n,process.source.fileNames
+process.source.fileNames=pref
 
-
-#rocess.source = cms.Source("PoolSource",
+#process.source = cms.Source("PoolSource",
 #   fileNames = cms.untracked.vstring("file:patTuple_mini.root")
 #
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
