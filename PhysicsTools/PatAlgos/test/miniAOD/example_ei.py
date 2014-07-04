@@ -1,13 +1,62 @@
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process("S2")
-process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring("file:patTuple_mini.root")
-)
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+from FWCore.ParameterSet.VarParsing import VarParsing
+options = VarParsing ('analysis')
+options.register ('n',
+                                  0,
+                                  VarParsing.multiplicity.singleton,
+                                  VarParsing.varType.int,
+                                  "njob")
+options.parseArguments()
 
-from RecoJets.JetProducers.ak5PFJets_cfi import ak5PFJets
-from RecoJets.JetProducers.ak5GenJets_cfi import ak5GenJets
+process.maxEvents = cms.untracked.PSet(
+    input = cms.untracked.int32(-1)
+)
+
+
+
+# Input source
+process.source = cms.Source("PoolSource",
+    secondaryFileNames = cms.untracked.vstring(),
+    fileNames = cms.untracked.vstring()
+)
+pref=[]
+files=[
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/F6EDDC10-8DFC-E311-BC5D-0025905A60D6.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/F8959ED2-8CFC-E311-BAFF-0026189438F3.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/F8D45F5C-8FFC-E311-959D-003048FFD770.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FA1047EF-8BFC-E311-A9DD-002618FDA216.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FA5C9BF9-8BFC-E311-98D0-002354EF3BE2.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FA83D84F-8BFC-E311-9E3C-002590593876.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FAAF27BD-89FC-E311-B7FD-002618943949.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FAF7B1B4-8DFC-E311-B2E9-00261894389F.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FC458100-8CFC-E311-8966-002618943902.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FC8DF28C-8CFC-E311-9F31-0026189438CF.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FC96F7F7-8BFC-E311-BDBE-0026189438EA.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FCAF2437-8EFC-E311-AC8E-0025905B85B2.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FCD129DE-8DFC-E311-B414-0026189438A9.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FE089433-8BFC-E311-AB37-0025905A60B0.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FE9C8807-8EFC-E311-94AB-002618943898.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FEACB5E7-89FC-E311-97B3-0025905A60BC.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FECACC56-8BFC-E311-93D4-002618943821.root',
+'/store/mc/Spring14miniaod/TTJets_MSDecaysCKM_central_Tune4C_13TeV-madgraph-tauola/MINIAODSIM/PU20bx25_POSTLS170_V5-v1/00000/FEDD889D-89FC-E311-B895-0025905A60A6.root'
+]
+for f in files:
+  #pref.append("root://cms-xrd-global.cern.ch/"+f)
+  pref.append("file:/gpfs/ddn/srm/cms/"+f)
+
+process.source.fileNames=[pref[options.n]]
+print options.n,process.source.fileNames
+
+
+#rocess.source = cms.Source("PoolSource",
+#   fileNames = cms.untracked.vstring("file:patTuple_mini.root")
+#
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+
+from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
+from RecoJets.JetProducers.ak4GenJets_cfi import ak4GenJets
 from RecoMET.METProducers.PFMET_cfi import pfMet
 
 #select isolated collections
@@ -35,9 +84,9 @@ process.pfNoElectrons = cms.EDProducer("CandPtrProjector", src = cms.InputTag("p
 
 
 
-process.ak5PFJets = ak5PFJets.clone(src = 'pfNoElectrons', doAreaFastjet = True) # no idea while doArea is false by default, but it's True in RECO so we have to set it
-process.ak5PFJetsCHS = ak5PFJets.clone(src = 'pfNoElectronsCHS', doAreaFastjet = True) # no idea while doArea is false by default, but it's True in RECO so we have to set it
-process.ak5GenJets = ak5GenJets.clone(src = 'packedGenParticles')
+process.ak4PFJets = ak4PFJets.clone(src = 'pfNoElectrons', doAreaFastjet = True) # no idea while doArea is false by default, but it's True in RECO so we have to set it
+process.ak4PFJetsCHS = ak4PFJets.clone(src = 'pfNoElectronsCHS', doAreaFastjet = True) # no idea while doArea is false by default, but it's True in RECO so we have to set it
+process.ak4GenJets = ak4GenJets.clone(src = 'packedGenParticles')
 
 
 # The following is make patJets, but EI is done with the above
@@ -46,41 +95,44 @@ process.load("Configuration.EventContent.EventContent_cff")
 process.load('Configuration.StandardSequences.Geometry_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = 'START70_V6::All'
+process.GlobalTag.globaltag = 'PLS170_V7AN1::All'
 
 
 from PhysicsTools.PatAlgos.tools.jetTools import addJetCollection
 addJetCollection(
    process,
    postfix   = "",
-   labelName = 'AK5PFCHS',
-   jetSource = cms.InputTag('ak5PFJetsCHS'),
+   labelName = 'AK4PFCHS',
+   jetSource = cms.InputTag('ak4PFJetsCHS'),
    trackSource = cms.InputTag('unpackedTracksAndVertices'), 
    pvSource = cms.InputTag('unpackedTracksAndVertices'), 
-   jetCorrections = ('AK5PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
+   jetCorrections = ('AK4PFchs', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
    btagDiscriminators = [      'combinedSecondaryVertexBJetTags'     ]
+   ,algo= 'AK', rParam = 0.4
    )
 addJetCollection(
    process,
    postfix   = "",
-   labelName = 'AK5PF',
-   jetSource = cms.InputTag('ak5PFJets'),
+   labelName = 'AK4PF',
+   jetSource = cms.InputTag('ak4PFJets'),
    trackSource = cms.InputTag('unpackedTracksAndVertices'),
    pvSource = cms.InputTag('unpackedTracksAndVertices'), 
-   jetCorrections = ('AK5PF', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
+   jetCorrections = ('AK4PF', cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), 'Type-2'),
    btagDiscriminators = [      'combinedSecondaryVertexBJetTags'     ]
+   ,algo= 'AK', rParam = 0.4
    )
 
 #adjust MC matching
-process.patJetPartonMatchPatJetsAK5PFCHS.matched = "prunedGenParticles"
-process.patJetPartonMatchPatJetsAK5PF.matched = "prunedGenParticles"
-process.patJetPartons.src = "prunedGenParticles"
+process.patJetGenJetMatchAK4PF.matched = "ak4GenJets"
+process.patJetPartonMatchAK4PF.matched = "prunedGenParticles"
+process.patJetPartonMatchAK4PFCHS.matched = "prunedGenParticles"
+process.patJetPartons.particles = "prunedGenParticles"
 process.patJetPartons.skipFirstN = cms.uint32(0) # do not skip first 6 particles, we already pruned some!
 process.patJetPartons.acceptNoDaughters = cms.bool(True) # as we drop intermediate stuff, we need to accept quarks with no siblings
 
 #adjust PV
-process.patJetCorrFactorsPatJetsAK5PFCHS.primaryVertices = "offlineSlimmedPrimaryVertices"
-process.patJetCorrFactorsPatJetsAK5PF.primaryVertices = "offlineSlimmedPrimaryVertices"
+process.patJetCorrFactorsAK4PFCHS.primaryVertices = "offlineSlimmedPrimaryVertices"
+process.patJetCorrFactorsAK4PF.primaryVertices = "offlineSlimmedPrimaryVertices"
 
 #recreate tracks and pv for btagging
 process.load('PhysicsTools.PatAlgos.slimming.unpackedTracksAndVertices_cfi')
@@ -95,7 +147,7 @@ process.options.allowUnscheduled = cms.untracked.bool(True)
 
 process.OUT = cms.OutputModule("PoolOutputModule",
     fileName = cms.untracked.string('test.root'),
-    outputCommands = cms.untracked.vstring(['drop *','keep patJets_patJetsAK5PF_*_*','keep patJets_patJetsAK5PFCHS_*_*','keep *_*_*_PAT'])
+    outputCommands = cms.untracked.vstring(['drop *','keep patJets_patJetsAK4PF_*_*','keep patJets_patJetsAK4PFCHS_*_*','keep *_*_*_PAT'])
 )
 process.endpath= cms.EndPath(process.OUT)
 
