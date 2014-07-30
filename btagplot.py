@@ -60,7 +60,7 @@ process.AK4byRef.jets                         = newjetID
 
 process.bTagValidation.jetMCSrc = 'AK4byValAlgo'
 process.bTagValidation.allHistograms = True 
-process.bTagValidation.ptRanges = cms.vdouble(50.0, 80.0, 120.0,300,500,1000)
+process.bTagValidation.ptRanges = cms.vdouble(50.0, 80.0, 120.0,300,450,10000)
 
 process.bTagValidation.applyPtHatWeight = False
 #process.bTagValidation.flavPlots = "allbcl" #if contains "noall" plots for all jets not booked, if contains "dusg" all histograms booked, default : all, b, c, udsg, ni

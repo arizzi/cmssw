@@ -9,9 +9,6 @@ process = cms.Process("rereco2")
 #keep the logging output to a nice level
 process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
-process.options = cms.untracked.PSet(multiProcesses=cms.untracked.PSet(
-        maxChildProcesses=cms.untracked.int32(15),
-        maxSequentialEventsPerChild=cms.untracked.uint32(10)))
 
 
 
