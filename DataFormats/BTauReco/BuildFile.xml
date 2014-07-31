@@ -9,6 +9,8 @@
 <use   name="clhep"/>
 <use   name="rootmath"/>
 <use   name="rootrflx"/>
+<flags LCG_DICT_HEADER="classes.h classes_trackiptaginfo.h"/>
+<flags LCG_DICT_XML="classes_def.xml classes_def_trackiptaginfo.xml"/>
 <export>
   <lib   name="1"/>
 </export>
