@@ -206,14 +206,6 @@
   <class name="reco::btag::TrackIPData"/>
   <class name="std::vector<reco::btag::TrackIPData>"/>
 
-  <class name="reco::TrackIPTagInfo"/>
-  <class name="reco::TrackIPTagInfoCollection"/>
-  <class name="reco::TrackIPTagInfoRef"/>
-  <class name="reco::TrackIPTagInfoFwdRef"/>
-  <class name="reco::TrackIPTagInfoRefProd"/>
-  <class name="reco::TrackIPTagInfoRefVector"/>
-  <class name="edm::Wrapper<reco::TrackIPTagInfoCollection>"/>
-
   <class name="reco::CandIPTagInfo"/>
   <class name="reco::CandIPTagInfoCollection"/>
   <class name="reco::CandIPTagInfoRef"/>
@@ -236,8 +228,6 @@
   <class name="edm::reftobase::RefHolder<reco::JetTagInfoRef>" />
   <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::TrackCountingTagInfoRef>" />
   <class name="edm::reftobase::RefHolder<reco::TrackCountingTagInfoRef>" />
-  <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::TrackIPTagInfoRef>" />
-  <class name="edm::reftobase::RefHolder<reco::TrackIPTagInfoRef>" />
   <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::SecondaryVertexTagInfoRef>" />
   <class name="edm::reftobase::RefHolder<reco::SecondaryVertexTagInfoRef>" />
   <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::CombinedTauTagInfoRef>" />
@@ -259,8 +249,6 @@
   <class name="edm::reftobase::RefHolder<reco::JetTagInfoFwdRef>" />
   <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::TrackCountingTagInfoFwdRef>" />
   <class name="edm::reftobase::RefHolder<reco::TrackCountingTagInfoFwdRef>" />
-  <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::TrackIPTagInfoFwdRef>" />
-  <class name="edm::reftobase::RefHolder<reco::TrackIPTagInfoFwdRef>" />
   <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::SecondaryVertexTagInfoFwdRef>" />
   <class name="edm::reftobase::RefHolder<reco::SecondaryVertexTagInfoFwdRef>" />
   <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::CombinedTauTagInfoFwdRef>" />

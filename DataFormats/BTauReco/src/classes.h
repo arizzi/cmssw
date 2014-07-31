@@ -35,7 +35,6 @@
 #include "DataFormats/BTauReco/interface/TauImpactParameterInfo.h"
 #include "DataFormats/BTauReco/interface/TauMassTagInfo.h"
 #include "DataFormats/BTauReco/interface/JetEisolAssociation.h"
-#include "DataFormats/BTauReco/interface/TrackIPTagInfo.h"
 #include "DataFormats/BTauReco/interface/CandIPTagInfo.h"
 #include "DataFormats/BTauReco/interface/BaseTagInfo.h"
 #include "DataFormats/BTauReco/interface/JTATagInfo.h"
@@ -188,14 +187,6 @@ namespace DataFormats_BTauReco {
     reco::btag::TrackIPData                                             tip_data;
     std::vector<reco::btag::TrackIPData>                                tip_datav;
 
-    reco::TrackIPTagInfo                                                tcip;
-    reco::TrackIPTagInfoCollection                                      tcip_c;
-    reco::TrackIPTagInfoRef                                             tcip_r;
-    reco::TrackIPTagInfoFwdRef                                          tcip_fr;
-    reco::TrackIPTagInfoRefProd                                         tcip_rp;
-    reco::TrackIPTagInfoRefVector                                       tcip_rv;
-
-    edm::Wrapper<reco::TrackIPTagInfoCollection>                        tcip_wc;
 
     reco::CandIPTagInfo                                                 cdip;
     reco::CandIPTagInfoCollection                                       cdip_c;
@@ -246,8 +237,6 @@ namespace DataFormats_BTauReco {
     edm::reftobase::RefHolder<reco::JetTagInfoRef>                              rbh_jti;
     edm::reftobase::Holder<reco::BaseTagInfo, reco::TrackCountingTagInfoRef>    rb_tc;
     edm::reftobase::RefHolder<reco::TrackCountingTagInfoRef>                    rbh_tc;
-    edm::reftobase::Holder<reco::BaseTagInfo, reco::TrackIPTagInfoRef>          rb_tcip;
-    edm::reftobase::RefHolder<reco::TrackIPTagInfoRef>                          rbh_tcip;
     edm::reftobase::Holder<reco::BaseTagInfo, reco::SecondaryVertexTagInfoRef>  rb_sv;
     edm::reftobase::RefHolder<reco::SecondaryVertexTagInfoRef>                  rbh_sv;
     edm::reftobase::Holder<reco::BaseTagInfo, reco::CombinedTauTagInfoRef>      rb_ct;
@@ -269,8 +258,6 @@ namespace DataFormats_BTauReco {
     edm::reftobase::RefHolder<reco::JetTagInfoFwdRef>                              rbh_jtif;
     edm::reftobase::Holder<reco::BaseTagInfo, reco::TrackCountingTagInfoFwdRef>    rb_tcf;
     edm::reftobase::RefHolder<reco::TrackCountingTagInfoFwdRef>                    rbh_tcf;
-    edm::reftobase::Holder<reco::BaseTagInfo, reco::TrackIPTagInfoFwdRef>          rb_tcipf;
-    edm::reftobase::RefHolder<reco::TrackIPTagInfoFwdRef>                          rbh_tcipf;
     edm::reftobase::Holder<reco::BaseTagInfo, reco::SecondaryVertexTagInfoFwdRef>  rb_svf;
     edm::reftobase::RefHolder<reco::SecondaryVertexTagInfoFwdRef>                  rbh_svf;
     edm::reftobase::Holder<reco::BaseTagInfo, reco::CombinedTauTagInfoFwdRef>      rb_ctf;

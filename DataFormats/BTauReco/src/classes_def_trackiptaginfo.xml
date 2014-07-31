@@ -1,0 +1,34 @@
+<lcgdict>
+  <class name="reco::old::TrackIPTagInfo" ClassVersion="11">
+   <version ClassVersion="11" checksum="2757856754"/>
+   <version ClassVersion="10" checksum="2757856754"/>
+  </class>
+  <class name="reco::old::TrackIPTagInfoCollection"/>
+  <class name="reco::old::TrackIPTagInfoRef"/>
+  <class name="reco::old::TrackIPTagInfoFwdRef"/>
+  <class name="reco::old::TrackIPTagInfoRefProd"/>
+  <class name="reco::old::TrackIPTagInfoRefVector"/>
+  <class name="edm::Wrapper<reco::old::TrackIPTagInfoCollection>"/>
+
+  <class name="reco::nw::TrackIPTagInfo" ClassVersion="10">
+   <version ClassVersion="10" checksum="2757856754"/>
+  </class>
+  <class name="reco::nw::TrackIPTagInfoCollection"/>
+  <class name="reco::nw::TrackIPTagInfoRef"/>
+  <class name="reco::nw::TrackIPTagInfoFwdRef"/>
+  <class name="reco::nw::TrackIPTagInfoRefProd"/>
+  <class name="reco::nw::TrackIPTagInfoRefVector"/>
+  <class name="edm::Wrapper<reco::nw::TrackIPTagInfoCollection>"/>
+
+  <!-- RefToBase stuff -->
+  <class name="edm::reftobase::Holder<reco::old::BaseTagInfo, reco::old::TrackIPTagInfoRef>" />
+  <class name="edm::reftobase::RefHolder<reco::old::TrackIPTagInfoRef>" />
+  <class name="edm::reftobase::Holder<reco::nw::BaseTagInfo, reco::nw::TrackIPTagInfoRef>" />
+  <class name="edm::reftobase::RefHolder<reco::nw::TrackIPTagInfoRef>" />
+
+  <class name="edm::reftobase::Holder<reco::old::BaseTagInfo, reco::old::TrackIPTagInfoFwdRef>" />
+  <class name="edm::reftobase::RefHolder<reco::old::TrackIPTagInfoFwdRef>" />
+  <class name="edm::reftobase::Holder<reco::nw::BaseTagInfo, reco::nw::TrackIPTagInfoFwdRef>" />
+  <class name="edm::reftobase::RefHolder<reco::nw::TrackIPTagInfoFwdRef>" />
+
+</lcgdict>
