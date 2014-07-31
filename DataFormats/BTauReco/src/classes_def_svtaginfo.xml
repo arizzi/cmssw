@@ -1,0 +1,30 @@
+<lcgdict>
+
+  <class name="reco::TemplatedSecondaryVertexTagInfo<reco::IPTagInfo<edm::RefVector<std::vector<reco::Track>,reco::Track,edm::refhelper::FindUsingAdvance<std::vector<reco::Track>,reco::Track> >,reco::JTATagInfo>,reco::Vertex>::VertexData"/> 
+  <class name="std::vector<reco::nw::SecondaryVertexTagInfo::VertexData>"/> 
+  <class name="reco::btag::IndexedTrackData"/>
+  <class name="std::vector<reco::btag::IndexedTrackData>"/> 
+
+  <class name="reco::nw::SecondaryVertexTagInfo" ClassVersion="11"/>
+  <class name="reco::nw::SecondaryVertexTagInfoCollection"/>
+  <class name="reco::nw::SecondaryVertexTagInfoRef"/>
+  <class name="reco::nw::SecondaryVertexTagInfoFwdRef"/>
+  <class name="reco::nw::SecondaryVertexTagInfoRefProd"/>
+  <class name="reco::nw::SecondaryVertexTagInfoRefVector"/>
+  <class name="edm::Wrapper<reco::nw::SecondaryVertexTagInfoCollection>"/>
+
+  <!-- Dictionary for the association in SVTagInfoProxy-->
+  <class name="edm::Wrapper<edm::helpers::KeyVal<edm::RefProd<std::vector<reco::nw::SecondaryVertexTagInfo> >, edm::RefProd<std::vector<reco::Vertex> > > >" persistent="false"/>
+  <!-- persistent="false" qualifier for non-wrappers is deprecated. Will be removed when no longer needed.-->
+  <class name="edm::helpers::KeyVal<edm::RefProd<std::vector<reco::nw::SecondaryVertexTagInfo> >, edm::RefProd<std::vector<reco::Vertex> > >" persistent="false"/>
+  <class name="edm::Wrapper<edm::AssociationMap<edm::OneToMany<std::vector<reco::nw::SecondaryVertexTagInfo>, std::vector<reco::Vertex>, unsigned int > > >" persistent="false"/>
+  <!-- persistent="false" qualifier for non-wrappers is deprecated. Will be removed when no longer needed.-->
+  <class name="edm::AssociationMap<edm::OneToMany<std::vector<reco::nw::SecondaryVertexTagInfo>, std::vector<reco::Vertex>, unsigned int > >" persistent="false">
+    <field name="transientMap_" transient="true" />
+  </class>
+  <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::nw::SecondaryVertexTagInfoRef>" />
+  <class name="edm::reftobase::RefHolder<reco::nw::SecondaryVertexTagInfoRef>" />
+  <class name="edm::reftobase::Holder<reco::BaseTagInfo, reco::nw::SecondaryVertexTagInfoFwdRef>" />
+  <class name="edm::reftobase::RefHolder<reco::nw::SecondaryVertexTagInfoFwdRef>" />
+
+</lcgdict>
