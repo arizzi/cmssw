@@ -39,7 +39,6 @@
 #include "Geometry/CaloTopology/interface/CaloSubdetectorTopology.h"
 #include "Geometry/CaloTopology/interface/CaloTopology.h"
 
-
 #include "DataFormats/PatCandidates/interface/UserData.h"
 #include "PhysicsTools/PatAlgos/interface/PATUserDataHelper.h"
 
@@ -63,6 +62,7 @@ namespace pat {
 
     private:
 
+
       // configurables
       edm::EDGetTokenT<edm::View<reco::Photon> > photonToken_;
       edm::EDGetTokenT<reco::GsfElectronCollection> electronToken_;
@@ -78,8 +78,8 @@ namespace pat {
       edm::InputTag reducedBarrelRecHitCollection_;
       edm::EDGetTokenT<EcalRecHitCollection> reducedBarrelRecHitCollectionToken_;
       edm::InputTag reducedEndcapRecHitCollection_;
-      edm::EDGetTokenT<EcalRecHitCollection> reducedEndcapRecHitCollectionToken_;      
-      
+      edm::EDGetTokenT<EcalRecHitCollection> reducedEndcapRecHitCollectionToken_;
+
       bool addGenMatch_;
       bool embedGenMatch_;
       std::vector<edm::EDGetTokenT<edm::Association<reco::GenParticleCollection> > > genMatchTokens_;
@@ -96,7 +96,7 @@ namespace pat {
       pat::helper::MultiIsolator::IsolationValuePairs isolatorTmpStorage_; // better here than recreate at each event
       std::vector<edm::EDGetTokenT<edm::ValueMap<IsoDeposit> > > isoDepositTokens_;
       std::vector<edm::EDGetTokenT<edm::ValueMap<double> > > isolationValueTokens_;
- 
+
       IsolationLabels isoDepositLabels_;
       IsolationLabels isolationValueLabels_;
 
@@ -120,7 +120,7 @@ namespace pat {
 
       bool useUserData_;
       pat::PATUserDataHelper<pat::Photon>      userDataHelper_;
-      
+
       const CaloTopology * ecalTopology_;
       const CaloGeometry * ecalGeometry_;
       EcalClusterLocal ecl_;

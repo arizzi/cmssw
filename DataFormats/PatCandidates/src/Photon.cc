@@ -168,21 +168,21 @@ Photon::Photon(const edm::Ptr<reco::Photon> & aPhotonRef) :
 Photon::~Photon() {
 }
 
-std::ostream& 
-reco::operator<<(std::ostream& out, const pat::Photon& obj) 
+std::ostream&
+reco::operator<<(std::ostream& out, const pat::Photon& obj)
 {
   if(!out) return out;
-  
+
   out << "\tpat::Photon: ";
   out << std::setiosflags(std::ios::right);
   out << std::setiosflags(std::ios::fixed);
   out << std::setprecision(3);
-  out << " E/pT/eta/phi " 
+  out << " E/pT/eta/phi "
       << obj.energy()<<"/"
       << obj.pt()<<"/"
       << obj.eta()<<"/"
       << obj.phi();
-  return out; 
+  return out;
 }
 
 /// override the superCluster method from CaloJet, to access the internal storage of the supercluster
@@ -255,7 +255,7 @@ void Photon::embedBasicClusters() {
     reco::CaloCluster_iterator itsclE = reco::Photon::superCluster()->clustersEnd();
     for(;itscl!=itsclE;++itscl){
       basicClusters_.push_back( **itscl ) ;
-    } 
+    }
   }
 }
 
@@ -335,7 +335,7 @@ reco::CandidatePtr Photon::sourceCandidatePtr( size_type i ) const {
     if (i >= associatedPackedFCandidateIndices_.size()) {
         return reco::CandidatePtr();
     } else {
-        return reco::CandidatePtr(edm::refToPtr(edm::Ref<pat::PackedCandidateCollection>(packedPFCandidates_, i)));
+        return reco::CandidatePtr(edm::refToPtr(edm::Ref<pat::PackedCandidateCollection>(packedPFCandidates_, associatedPackedFCandidateIndices_[i])));
     }
 }
 

@@ -46,10 +46,10 @@ MicroEventContent = cms.PSet(
 
         'keep double_fixedGridRho*__*', 
 
-        'keep *_selectedPatTrigger_*_PAT',
-        'keep patPackedTriggerPrescales_patTrigger__PAT',
-        'keep *_l1extraParticles_*_HLT',
-        'keep L1GlobalTriggerReadoutRecord_gtDigis_*_HLT',
+        'keep *_selectedPatTrigger_*_*',
+        'keep patPackedTriggerPrescales_patTrigger__*',
+        'keep *_l1extraParticles_*_*',
+        'keep L1GlobalTriggerReadoutRecord_gtDigis_*_*',
         'keep *_TriggerResults_*_HLT',
         'keep *_TriggerResults_*_PAT', # for MET filters
 	'keep patPackedCandidates_lostTracks_*_PAT',
