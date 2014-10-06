@@ -21,7 +21,8 @@ class BasicTreeProducer( TreeAnalyzerNumpy ):
 
         ## Declare how we store floats by default
         self.tree.setDefaultFloatType("F"); # otherwise it's "D"
-        
+ 
+	self.collections = {}       
 
     def declareHandles(self):
         super(ttHLepTreeProducerNew, self).declareHandles()
