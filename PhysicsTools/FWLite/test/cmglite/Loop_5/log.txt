@@ -1,0 +1,12 @@
+starting loop at event 0 to process 10000 events.
+{'isEmbed': False, 'isMC': False, 'name': 'ATEST', 'files': '../../../../../../CMSSW_7_0_9/src/test04.root'}
+beginLoop BasicTreeProducer
+
+{'type': <class 'PhysicsTools.FWLite.core.BasicTreeProducer.BasicTreeProducer'>, 'vectorTree': True, 'collections': {'slimmedMuons': (<PhysicsTools.FWLite.core.AutoHandle.AutoHandle object at 0x5aa5590>, <PhysicsTools.FWLite.core.ntupleObjects.NTupleCollection instance at 0x5aa9c20>)}, 'verbose': False, 'name': 'BasicTreeProducer'}
+
+
+
+
+{'isEmbed': False, 'isMC': False, 'name': 'ATEST', 'files': '../../../../../../CMSSW_7_0_9/src/test04.root'}
+
+number of events processed: 10000

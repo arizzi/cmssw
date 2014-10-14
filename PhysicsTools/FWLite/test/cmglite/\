@@ -1,0 +1,27 @@
+#! /usr/bin/env python
+from PhysicsTools.FWLite.core.BasicTreeProducer  import * 
+from PhysicsTools.FWLite.core.Looper import * 
+class Bunch(dict):
+    def __init__(self, **kw):
+	dict.__init__(self,kw)
+        self.__dict__ = self
+
+
+
+treeProducer= Bunch(
+	type=BasicTreeProducer, 
+	verbose=False, 
+	vectorTree = True,
+	collections = {
+		"slimmedMuons" : ( AutoHandle( ("slimmedMuons",), "std::vector<pat::Muon>" ),
+                           NTupleCollection("mu", particleType, 4, help="patMuons, directly from MINIAOD") )
+
+	}
+	)
+
+sequence = [treeProducer]
+sample = Bunch(files = "../../../../../../CMSSW_7_0_9/src/test04.root", name="ATEST", isMC=False,isEmbed=False)
+looper = Looper( 'Loop', sample,sequence, nPrint = 5)
+looper.loop()
+looper.write()
+
