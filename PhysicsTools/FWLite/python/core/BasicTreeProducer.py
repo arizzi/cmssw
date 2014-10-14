@@ -1,7 +1,7 @@
-from PhysicsTools.FWLite.TreeAnalyzerNumpy import TreeAnalyzerNumpy
-from PhysicsTools.FWLite.ntupleObjects import *
-from PhysicsTools.FWLite.ntupleTypes   import *
-from PhysicsTools.FWLite.AutoHandle import AutoHandle
+from PhysicsTools.FWLite.core.TreeAnalyzerNumpy import TreeAnalyzerNumpy
+from PhysicsTools.FWLite.core.ntupleObjects import *
+from PhysicsTools.FWLite.utils.ntupleTypes   import *
+from PhysicsTools.FWLite.core.AutoHandle import AutoHandle
 #from ROOT import TriggerBitChecker
 
 class BasicTreeProducer( TreeAnalyzerNumpy ):
@@ -22,10 +22,22 @@ class BasicTreeProducer( TreeAnalyzerNumpy ):
         ## Declare how we store floats by default
         self.tree.setDefaultFloatType("F"); # otherwise it's "D"
  
-	self.collections = {}       
+	self.collections = {}      
+        self.globalObjects = {}
+	self.globalVariables = {}
+	if hasattr(cfg_ana,"collections"):
+		self.collections=cfg_ana.collections
+	if hasattr(cfg_ana,"globalObjects"):
+		self.globalObjects=cfg_ana.globalObjects
+	if hasattr(cfg_ana,"globalVariables"):
+		self.globalVariables=cfg_ana.globalVariables
+
+        if self.__class__.__name__ == "BasicTreeProducer":
+            self.initDone = True
+            self.declareVariables() 
 
     def declareHandles(self):
-        super(ttHLepTreeProducerNew, self).declareHandles()
+        super(BasicTreeProducer, self).declareHandles()
 #        self.handles['TriggerResults'] = AutoHandle( ('TriggerResults','','HLT'), 'edm::TriggerResults' )
         self.mchandles['GenInfo'] = AutoHandle( ('generator','',''), 'GenEventInfoProduct' )
         for k,v in self.collections.iteritems():
@@ -34,7 +46,6 @@ class BasicTreeProducer( TreeAnalyzerNumpy ):
 
     def declareCoreVariables(self, tr, isMC):
         """Here we declare the variables that we always want and that are hard-coded"""
-            
         tr.var('run', int, storageType="i")
         tr.var('lumi', int, storageType="i")
         tr.var('evt', int, storageType="i")
@@ -127,23 +138,23 @@ class BasicTreeProducer( TreeAnalyzerNumpy ):
 
         for v in self.globalVariables:
             if not isMC and v.mcOnly: continue
-            v.fillBranch(self.tree, iEvent, isMC)
+            v.fillBranch(self.tree, iEvent.event, isMC)
 
         for on, o in self.globalObjects.iteritems(): 
             if not isMC and o.mcOnly: continue
-            o.fillBranches(self.tree, getattr(iEvent, on), isMC)
+            o.fillBranches(self.tree, getattr(iEvent.event, on), isMC)
 
         for cn, c in self.collections.iteritems():
             if type(c) == tuple and isinstance(c[0], AutoHandle):
                 if not isMC and c[-1].mcOnly: continue
                 objects = self.handles[cn].product()
-                setattr(iEvent, cn, [objects[i] for i in xrange(objects.size())])
+                setattr(iEvent.event, cn, [objects[i] for i in xrange(objects.size())])
                 c = c[-1]
             if not isMC and c.mcOnly: continue
             if self.scalar:
-                c.fillBranchesScalar(self.tree, getattr(iEvent, cn), isMC)
+                c.fillBranchesScalar(self.tree, getattr(iEvent.event, cn), isMC)
             else:
-                c.fillBranchesVector(self.tree, getattr(iEvent, cn), isMC)
+                c.fillBranchesVector(self.tree, getattr(iEvent.event, cn), isMC)
 
         self.tree.tree.Fill()      
 

@@ -1,5 +1,5 @@
-from PhysicsTools.FWLite.Analyzer import Analyzer
-from PhysicsTools.FWLite.TreeNumpy import TreeNumpy as Tree
+from PhysicsTools.FWLite.core.Analyzer import Analyzer
+from PhysicsTools.FWLite.core.TreeNumpy import TreeNumpy as Tree
 from ROOT import TFile
 
 class TreeAnalyzerNumpy( Analyzer ):
@@ -19,6 +19,7 @@ class TreeAnalyzerNumpy( Analyzer ):
 
         self.file = TFile( fileName, 'recreate', '', isCompressed )
         self.tree = Tree(self.name,self.name)
+	print "here we go"
         self.declareVariables()
         
     def declareVariables(self):

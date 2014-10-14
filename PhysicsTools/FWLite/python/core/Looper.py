@@ -5,8 +5,7 @@ import imp
 import logging
 import pprint 
 from DataFormats.FWLite import Events, Handle
-from CMGTools.RootTools.fwlite.Event import Event 
-from CMGTools.RootTools.fwlite.PythonPath import pythonpath
+from PhysicsTools.FWLite.core.Event import Event
 
                 
 class Looper(object):
@@ -60,38 +59,8 @@ class Looper(object):
         return tmpname
 
     def _buildAnalyzer(self, cfg_ana):
-        obj = None
-        className = cfg_ana.name.split('_')[0]
-        theClass = None
-        try:
-            # obviously, can't load a module twice
-            # so keep track of the needed classes, instead several instances are built
-            theClass = self.classes[className]
-            print 'found class', theClass
-            obj = theClass( cfg_ana, self.cfg_comp, self.outDir ) 
-        except KeyError:
-            file = None
-            try:
-                file, path, desc = imp.find_module( className )
-                mod  = imp.load_module( className ,
-                                        file, path, desc )
-                # getting the analyzer class object
-                theClass = mod.__dict__[ className ]
-                self.classes[className] = theClass
-                # creating an analyzer
-                #if hasattr( cfg_ana, 'instanceName'):
-                #    cfg_ana.name = cfg_ana.instanceName
-                print 'loading class', theClass
-                print '  from', file
-                obj = theClass( cfg_ana, self.cfg_comp, self.outDir )
-            finally:
-                try:
-                    file.close()
-                except AttributeError:
-                    print 'problem loading module', cfg_ana.name
-                    print 'please make sure that the module name is correct.'
-                    print 'if it is, is this module in your path, as defined below?'
-                    pprint.pprint( sorted( sys.path )) 
+	cfg_ana.name = cfg_ana.type.__name__
+        obj = cfg_ana.type(cfg_ana, self.cfg_comp, self.outDir)
         return obj
 
     def loop(self):
@@ -121,7 +90,7 @@ class Looper(object):
                     print 'event', iEv
                 self.process( iEv )
                 if iEv<self.nPrint:
-                    print self.event
+                    print self.events.event
         except UserWarning:
             print 'Stopped loop following a UserWarning exception'
         for analyzer in self.analyzers:
@@ -139,13 +108,13 @@ class Looper(object):
 
         TODO: add an example for event investigation.
         '''
-        self.event = Event( iEv )
-        self.iEvent = iEv
+        self.events.event = Event( iEv )
         self.events.to(iEv)
+        self.iEvent = self.events._eventCounts
         for analyzer in self.analyzers:
             if not analyzer.beginLoopCalled:
                 analyzer.beginLoop()
-            if analyzer.process( self.events, self.event ) == False:
+            if analyzer.process( self.events ) == False:
                 return (False, analyzer.name)
         return (True, analyzer.name)
             
@@ -163,7 +132,7 @@ if __name__ == '__main__':
     import pickle
     import sys
     import os
-    from CMGTools.RootTools.fwlite.PythonPath import pythonpath
+#    from CMGTools.RootTools.fwlite.PythonPath import pythonpath
     sys.path = pythonpath + sys.path
 
     cfgFileName = sys.argv[1]

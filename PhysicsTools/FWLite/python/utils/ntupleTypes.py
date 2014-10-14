@@ -1,8 +1,9 @@
 #!/bin/env python
 from math import *
+import ROOT
 #from CMGTools.TTHAnalysis.signedSip import *
-from CMGTools.TTHAnalysis.analyzers.ntupleObjects import *
-from CMGTools.RootTools.utils.DeltaR import deltaR
+from PhysicsTools.FWLite.core.ntupleObjects import *
+from PhysicsTools.FWLite.utils.DeltaR import deltaR
 
 twoVectorType = NTupleObjectType("twoVector", variables = [
     NTupleVariable("pt",    lambda x : x.pt()),
