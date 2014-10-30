@@ -24,11 +24,11 @@ namespace reco {
       chi2_(0), ndof_(0), hasTrack_(false) { }
     /// constructor from values
     VertexCompositePtrCandidate(Charge q, const LorentzVector & p4, const Point & vtx,
-			     const CovarianceMatrix & err, double chi2, double ndof,
+			     const CovarianceMatrix & err, double chi2, double ndof, const daughters & dau=daughters(),
 			     int pdgId = 0, int status = 0, bool integerCharge = true);
 
     VertexCompositePtrCandidate(Charge q, const LorentzVector & p4, const Point & vtx,
-			     const CovarianceMatrix & err, double chi2, double ndof, const reco::Track & t,
+			     const CovarianceMatrix & err, double chi2, double ndof, const reco::Track & t, const daughters & dau=daughters(),
 			     int pdgId = 0, int status = 0, bool integerCharge = true);
      /// constructor from values
     explicit VertexCompositePtrCandidate(const Candidate & p) :

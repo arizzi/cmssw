@@ -4,17 +4,17 @@
 using namespace reco;
 
 VertexCompositePtrCandidate::VertexCompositePtrCandidate(Charge q, const LorentzVector & p4, const Point & vtx,
-						   const CovarianceMatrix & err, double chi2, double ndof,
+						   const CovarianceMatrix & err, double chi2, double ndof, const daughters & d,
 						   int pdgId, int status, bool integerCharge) :
-  CompositePtrCandidate(q, p4, vtx, pdgId, status, integerCharge),
+  CompositePtrCandidate(q, p4, d, vtx, pdgId, status, integerCharge),
   chi2_(chi2), ndof_(ndof), hasTrack_(false) {
   setCovariance(err);
 }
 
 VertexCompositePtrCandidate::VertexCompositePtrCandidate(Charge q, const LorentzVector & p4, const Point & vtx,
-                                                   const CovarianceMatrix & err, double chi2, double ndof, const reco::Track & t,
+                                                   const CovarianceMatrix & err, double chi2, double ndof, const reco::Track & t, const daughters & d,
                                                    int pdgId, int status, bool integerCharge) :
-  CompositePtrCandidate(q, p4, vtx, pdgId, status, integerCharge),
+  CompositePtrCandidate(q, p4, d, vtx,  pdgId, status, integerCharge),
   chi2_(chi2), ndof_(ndof),  track_(t), hasTrack_(true) {
   setCovariance(err);
 }
@@ -39,7 +39,7 @@ void VertexCompositePtrCandidate::setCovariance(const CovarianceMatrix & err, bo
     for(index j = 0; j <= i; ++j)
       covariance_[idx++] = err(i, j);
   // if we set the covariance and the pseudo track wasn't yet available we can compute it
-  if(!hasTrack_ && trackUpdate) {
+  if(!hasTrack_ && trackUpdate && numberOfDaughters() > 0) {
 	  track_=createTrack();	
 	  hasTrack_ = true; 
 	}

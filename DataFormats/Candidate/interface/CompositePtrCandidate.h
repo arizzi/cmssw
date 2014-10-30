@@ -29,9 +29,19 @@ namespace reco {
 			   int pdgId = 0, int status = 0, bool integerCharge = true ) :
       LeafCandidate( q, p4, vtx, pdgId, status, integerCharge ) { }
     /// constructor from values
-    CompositePtrCandidate( Charge q, const PolarLorentzVector & p4, const Point & vtx = Point( 0, 0, 0 ),
+    CompositePtrCandidate( Charge q, const PolarLorentzVector & p4, const Point & vtx = Point( 0, 0, 0 ), 
 			   int pdgId = 0, int status = 0, bool integerCharge = true ) :
       LeafCandidate( q, p4, vtx, pdgId, status, integerCharge ) { }
+    /// constructor from values with daughters
+    CompositePtrCandidate( Charge q, const LorentzVector & p4,  const daughters & d, const Point & vtx = Point( 0, 0, 0 ), 
+                           int pdgId = 0, int status = 0, bool integerCharge = true ) :
+      LeafCandidate( q, p4, vtx, pdgId, status, integerCharge ), dau(d) { }
+    /// constructor from values with daughters
+    CompositePtrCandidate( Charge q, const PolarLorentzVector & p4,  const daughters & d, const Point & vtx = Point( 0, 0, 0 ),
+                           int pdgId = 0, int status = 0, bool integerCharge = true ) :
+      LeafCandidate( q, p4, vtx, pdgId, status, integerCharge ), dau(d) { }
+
+
     /// constructor from a Candidate
     explicit CompositePtrCandidate( const Candidate & p ) : LeafCandidate( p ) { }
     /// destructor
