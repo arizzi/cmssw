@@ -57,6 +57,14 @@ TrackKinematics &TrackKinematics::operator += (const TrackKinematics &other)
 
 	return *this;
 }
+void TrackKinematics::add(const CandidatePtr &cand, double weight)
+{
+        n++;
+        sumWeights += weight;
+        sum += cand->p4();
+        weightedSum += weight * cand->p4();
+
+}
 
 void TrackKinematics::add(const Track &track, double weight)
 {

@@ -110,7 +110,7 @@ CombinedSVComputer::threshTrack(const CandIPTagInfo &trackIPTagInfo,
                 if (!trackNoDeltaRSelector(track, data, jet, pv))
                         continue;
 
-                kin.add(track);
+                kin.add(tracks[idx]);
                 if (kin.vectorSum().M() > charmCut)
                         return data;
         }
@@ -258,12 +258,12 @@ CombinedSVComputer::operator () (const CandIPTagInfo &ipInfo,
 		const reco::VertexCompositePtrCandidate &vertex = svInfo.secondaryVertex(i);
 		const std::vector<CandidatePtr> tracks = vertex.daughterPtrVector();
 		for(std::vector<CandidatePtr>::const_iterator track = tracks.begin(); track != tracks.end(); ++track) {
-			vertexKinematics.add(*(*track)->bestTrack(), 1.0);
+			vertexKinematics.add((*track), 1.0);
 			if( isUsed(btau::trackEtaRel) ) vars.insert(btau::trackEtaRel, reco::btau::etaRel(jetDir,(*track)->momentum()), true);
 			if(vtx < 0) // calculate this only for the first vertex
 			{
-				vtx_track_ptSum += std::sqrt((*track)->momentum().Perp2());
-				vtx_track_ESum  += std::sqrt((*track)->momentum().Mag2() + ROOT::Math::Square(ParticleMasses::piPlus));
+				vtx_track_ptSum += (*track)->p4().Pt();
+				vtx_track_ESum  += (*track)->p4().E();
 			}
 		}
 		
