@@ -11,26 +11,31 @@
  */
 #include "DataFormats/Candidate/interface/VertexCompositePtrCandidateFwd.h"
 #include "DataFormats/Candidate/interface/CompositePtrCandidate.h"
+#include "DataFormats/TrackReco/interface/Track.h"
 
 namespace reco {
   class VertexCompositePtrCandidate : public CompositePtrCandidate {
   public:
-    VertexCompositePtrCandidate() : CompositePtrCandidate() { }
+    VertexCompositePtrCandidate() : CompositePtrCandidate(), hasTrack_(false) { }
     /// constructor from values
     VertexCompositePtrCandidate(Charge q, const LorentzVector & p4, const Point & vtx,
 			     int pdgId = 0, int status = 0, bool integerCharge = true) :
-      CompositePtrCandidate(q, p4, vtx, pdgId, status, integerCharge),
-      chi2_(0), ndof_(0) { }
+      CompositePtrCandidate(q, p4, vtx, pdgId, status, integerCharge), 
+      chi2_(0), ndof_(0), hasTrack_(false) { }
     /// constructor from values
     VertexCompositePtrCandidate(Charge q, const LorentzVector & p4, const Point & vtx,
-			     const CovarianceMatrix & err, double chi2, double ndof,
+			     const CovarianceMatrix & err, double chi2, double ndof, const daughters & dau=daughters(),
+			     int pdgId = 0, int status = 0, bool integerCharge = true);
+
+    VertexCompositePtrCandidate(Charge q, const LorentzVector & p4, const Point & vtx,
+			     const CovarianceMatrix & err, double chi2, double ndof, const reco::Track & t, const daughters & dau=daughters(),
 			     int pdgId = 0, int status = 0, bool integerCharge = true);
      /// constructor from values
     explicit VertexCompositePtrCandidate(const Candidate & p) :
-      CompositePtrCandidate(p), chi2_(0), ndof_(0) { }
+      CompositePtrCandidate(p), chi2_(0), ndof_(0), hasTrack_(false) { }
      /// constructor from values
     explicit VertexCompositePtrCandidate(const CompositePtrCandidate & p) :
-      CompositePtrCandidate(p), chi2_(0), ndof_(0) { }
+      CompositePtrCandidate(p), chi2_(0), ndof_(0), hasTrack_(false) { }
     /// destructor
     virtual ~VertexCompositePtrCandidate();
     /// returns a clone of the candidate
@@ -58,7 +63,20 @@ namespace reco {
       chi2_ = chi2; ndof_ = ndof;
     }
     /// set covariance matrix
-    void setCovariance(const CovarianceMatrix &m);
+    void setCovariance(const CovarianceMatrix &m, bool trackUpdate=true);
+    /// return a pointer to the track if present. otherwise, return a null pointer
+    virtual const reco::Track* bestTrack() const {
+	if(hasTrack_)
+		return &track_;	
+	else
+		return nullptr;
+    }
+    reco::Track createTrack() const;
+
+    /// the following functions are implemented to have a more consistent interface with the one of reco::Vertex
+    typedef math::Error<dimension>::type Error;  
+    const Point & position() const {return vertex();} 	
+    Error  error() const { Error m; fillVertexCovariance( m ); return m; }
 
   private:
     /// chi-sqared
@@ -72,6 +90,9 @@ namespace reco {
       int a = (i <= j ? i : j), b = (i <= j ? j : i);
       return b * (b + 1)/2 + a;
     }
+    /// reco::Track
+    reco::Track track_;
+    bool hasTrack_;
   };
 
 }
