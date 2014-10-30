@@ -84,7 +84,8 @@ namespace IPProducerHelpers {
       class FromJetAndCands{
               public:
 		      FromJetAndCands(const edm::ParameterSet& iConfig,  edm::ConsumesCollector && iC): token_jets(iC.consumes<edm::View<reco::Jet> >(iConfig.getParameter<edm::InputTag>("jets"))),          
-		      token_cands(iC.consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("candidates"))), maxDeltaR(iConfig.getParameter<double>("maxDeltaR")){}
+		      token_cands(iC.consumes<edm::View<reco::Candidate> >(iConfig.getParameter<edm::InputTag>("candidates"))), 
+		      token_candsPtr(iC.consumes<std::vector<reco::CandidatePtr> >(iConfig.getParameter<edm::InputTag>("candidates"))),	maxDeltaR(iConfig.getParameter<double>("maxDeltaR")){}
 
                       std::vector<reco::CandidatePtr> tracks(edm::Event&,const reco::JetTagInfo & it)
                       {
@@ -96,27 +97,42 @@ namespace IPProducerHelpers {
                               std::vector<reco::JetTagInfo> bases;
 			      
                               edm::Handle<edm::View<reco::Candidate> > cands;
-                              iEvent.getByToken(token_cands, cands);
+                              edm::Handle<std::vector<reco::CandidatePtr> > candsPtr;
 			      m_map.clear();
 			      m_map.resize(jets->size());	
                               size_t i = 0;
+ 	                      bool viewWorks=iEvent.getByToken(token_cands, cands);
+			      if(!viewWorks) iEvent.getByToken(token_candsPtr,candsPtr);
+					
                               for(edm::View<reco::Jet>::const_iterator it = jets->begin();
                                               it != jets->end(); it++, i++) {
                                       edm::RefToBase<reco::Jet> jRef(jets, i);
                                       bases.push_back(jRef);
-				      //FIXME: add deltaR or any other requirement here
-				      for(size_t j=0;j<cands->size();j++) {
-					      if((*cands)[j].bestTrack()!=0 &&  ROOT::Math::VectorUtil::DeltaR((*cands)[j].p4(),(*jets)[i].p4()) < maxDeltaR
-						 && ( (*cands)[j].charge() !=0 || (*cands)[j].pdgId() == 310 )){
-						      m_map[i].push_back(cands->ptrAt(j));	
+				      if(viewWorks){
+					      for(size_t j=0;j<cands->size();j++) {
+						      if((*cands)[j].bestTrack()!=0 &&  ROOT::Math::VectorUtil::DeltaR((*cands)[j].p4(),(*jets)[i].p4()) < maxDeltaR
+								      && ( (*cands)[j].charge() !=0 || (*cands)[j].pdgId() == 310 )){
+							      m_map[i].push_back(cands->ptrAt(j));	
+						      }
 					      }
 				      }
-                              }
-                              return bases;
-                      }
+				      else
+				      {
+					      for(size_t j=0;j<candsPtr->size();j++) {
+						      if((*candsPtr)[j]->bestTrack()!=0 &&  ROOT::Math::VectorUtil::DeltaR((*candsPtr)[j]->p4(),(*jets)[i].p4()) < maxDeltaR
+								      && ( (*candsPtr)[j]->charge() !=0 || (*candsPtr)[j]->pdgId() == 310 )){
+							      m_map[i].push_back((*candsPtr)[j]); 
+						      }
+					      }
+
+				      }
+			      }
+			      return bases;
+		      }
 		      std::vector<std::vector<reco::CandidatePtr> > m_map;	
                       edm::EDGetTokenT<edm::View<reco::Jet> > token_jets;
                       edm::EDGetTokenT<edm::View<reco::Candidate> >token_cands;
+                      edm::EDGetTokenT<std::vector<reco::CandidatePtr> >token_candsPtr;
 		      double maxDeltaR;	
       };
 }
