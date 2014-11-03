@@ -17,6 +17,8 @@
 namespace { // C++ template pointer want "external" linkage, so here we go
 	extern const char ipTagInfos[] = "ipTagInfos";
 	extern const char svTagInfos[] = "svTagInfos";
+	extern const char cipTagInfos[] = "cipTagInfos";
+	extern const char csvTagInfos[] = "csvTagInfos";
 	extern const char muonTagInfos[] = "muonTagInfos";
 	extern const char elecTagInfos[] = "elecTagInfos";
 }
@@ -26,16 +28,16 @@ typedef GenericMVAJetTagComputerWrapper<CombinedSVComputer,
 	reco::SecondaryVertexTagInfo, svTagInfos> CombinedSVJetTagComputer;
 
 typedef GenericMVAJetTagComputerWrapper<CombinedSVComputer,
-	reco::CandIPTagInfo,         ipTagInfos,
-	reco::CandSecondaryVertexTagInfo, svTagInfos> CandidateCombinedSVJetTagComputer;
+	reco::CandIPTagInfo,         cipTagInfos,
+	reco::CandSecondaryVertexTagInfo, csvTagInfos> CandidateCombinedSVJetTagComputer;
 
 typedef GenericMVAJetTagComputerWrapper<CombinedSVComputerV2,
 	reco::TrackIPTagInfo,         ipTagInfos,
 	reco::SecondaryVertexTagInfo, svTagInfos> CombinedSVJetTagComputerV2;
 
 typedef GenericMVAJetTagComputerWrapper<CombinedSVComputerV2,
-        reco::CandIPTagInfo,         ipTagInfos,
-        reco::CandSecondaryVertexTagInfo, svTagInfos> CandidateCombinedSVJetTagComputerV2;
+        reco::CandIPTagInfo,         cipTagInfos,
+        reco::CandSecondaryVertexTagInfo, csvTagInfos> CandidateCombinedSVJetTagComputerV2;
 
 typedef GenericMVAJetTagComputerWrapper<CombinedSVSoftLeptonComputer,
 	reco::TrackIPTagInfo,         ipTagInfos,
