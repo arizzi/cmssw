@@ -50,17 +50,24 @@ void V0CandidateConverter::produce(edm::Event& iEvent, const edm::EventSetup& iS
 	    reco::VertexCompositeCandidate::CovarianceMatrix error;
 	    v.fillVertexCovariance(error);
 	    reco::CompositePtrCandidate::daughters d;	
+	    bool isBad = false;
 	    for(unsigned j = 0; j < v.numberOfDaughters(); j++)  {
 	    	    const reco::Track * track = v.daughter(j)->bestTrack();
 		    for(unsigned k = 0; k < cands->size() ; k++)
 		    {
-			if(track==(*cands)[k].bestTrack()) {
+			const reco::Track * cTrack = (*cands)[k].bestTrack();
+			if(track==cTrack) {
 				 d.push_back(cands->ptrAt(k));
-				 break;
+			}else if(cTrack != nullptr){ //there should be no other compatible tracks
+				if(std::abs(cTrack->dxy(v.vertex())) < 0.02 && std::abs(cTrack->dz(v.vertex())) < 0.02 )
+					{
+						isBad=true;
+//						std::cout << "Vertex " << i << " rejected because of cand " << k << "being at " << (std::abs(cTrack->dxy(v.vertex()))) << " " <<  std::abs(cTrack->dz(v.vertex())) << std::endl;
+					}	
 			}
 		    }	
 	    }
-	    outPtr->push_back(reco::VertexCompositePtrCandidate(0,v.p4(),v.vertex(), error, v.vertexChi2(), v.vertexNdof(),d,v.pdgId()));
+	    if(!isBad) outPtr->push_back(reco::VertexCompositePtrCandidate(0,v.p4(),v.vertex(), error, v.vertexChi2(), v.vertexNdof(),d,v.pdgId()));
     }
 
     iEvent.put(outPtr);
