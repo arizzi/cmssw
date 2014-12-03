@@ -85,9 +85,9 @@ VHbb= cfg.Analyzer(
     verbose=False,
     class_object=VHbbAnalyzer,
     wEleSelection = lambda x : x.pt() > 25 and x.electronID("cutBasedElectronID-CSA14-PU20bx25-V0-standalone-tight"),
-    wMuSelection = lambda x : x.pt() > 25,
+    wMuSelection = lambda x : x.pt() > 25 and x.muonID("POG_ID_Tight"),
     zEleSelection = lambda x : x.pt() > 20 and x.electronID("cutBasedElectronID-CSA14-PU20bx25-V0-standalone-loose"),
-    zMuSelection = lambda x : x.pt() > 20,
+    zMuSelection = lambda x : x.pt() > 20 and x.muonID("POG_ID_Tight"),
     )
 
 
