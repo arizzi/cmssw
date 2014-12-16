@@ -1,5 +1,7 @@
 from PhysicsTools.Heppy.analyzers.core.Analyzer import Analyzer
 from PhysicsTools.Heppy.analyzers.core.AutoHandle import AutoHandle
+from PhysicsTools.HeppyCore.utils.deltar import deltaR
+
 import itertools
 import ROOT
 class VHbbAnalyzer( Analyzer ):
@@ -48,6 +50,25 @@ class VHbbAnalyzer( Analyzer ):
         event.ajidx=[event.cleanJets.index(x) for x in event.aJets ]
         event.aJets+=event.cleanJetsFwd
         event.H = event.hJets[0].p4()+event.hJets[1].p4()
+
+
+    def doHiggs3cj(self,event) :
+        event.H3cj = ROOT.reco.Particle.LorentzVector(0.,0.,0.,0.)
+        event.hJets3cj = []
+        event.aJets3cj = []
+	event.hjidx3cj = []         
+	event.ajidx3cj = []         
+        event.minDr3 = 0         
+        #3 jets interpretations, for the closest 3 central jets
+        if (len(event.cleanJets) > 2 and event.cleanJets[2] > 15.): 
+           event.hJets3cj=list(min(itertools.combinations(event.cleanJets,3), key = lambda x : ( x[2]>15 and (deltaR( x[0].eta(), x[0].phi(), x[2].eta(), x[2].phi()) +  deltaR( x[1].eta(), x[1].phi(), x[2].eta(), x[2].phi()) ) ) ))
+           event.aJets3cj = [x for x in event.cleanJets if x not in event.hJets3cj]
+           event.hjidx3cj=[event.cleanJets.index(x) for x in event.hJets3cj ]
+           event.ajidx3cj=[event.cleanJets.index(x) for x in event.aJets3cj ]
+           event.aJets3cj+=event.cleanJetsFwd
+           event.H3cj = event.hJets3cj[0].p4()+event.hJets3cj[1].p4()+event.hJets3cj[2].p4()
+           event.minDr3 = min(deltaR( event.hJets3cj[0].eta(), event.hJets3cj[0].phi(), event.hJets3cj[2].eta(), event.hJets3cj[2].phi()) ,  deltaR( event.hJets3cj[1].eta(), event.hJets3cj[1].phi(), event.hJets3cj[2].eta(), event.hJets3cj[2].phi()))  
+
 
     def classifyMCEvent(self,event):
         if self.cfg_comp.isMC:
@@ -151,6 +172,7 @@ class VHbbAnalyzer( Analyzer ):
 		return False
 	self.doHiggsHighCSV(event)
 	self.doHiggsHighPt(event)
+        self.doHiggs3cj(event)
 	self.doFakeMET(event)
 
 
