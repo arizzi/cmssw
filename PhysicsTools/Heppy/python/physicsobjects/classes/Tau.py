@@ -52,7 +52,7 @@ class Tau( Lepton ):
         return vertex.z() + 130./math.tan(self.theta())
 
     def __str__(self):
-        lep = super(Tau, self).__str__()
+        lep = self.particlePrint()
         return lep
         #spec = '\t\tTau: decay = {decMode:<15}, eOverP = {eOverP:4.2f}, isoMVALoose = {isoMVALoose}'.format(
         #    decMode = tauDecayModes.intToName( self.decayMode() ),

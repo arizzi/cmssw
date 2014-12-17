@@ -2,9 +2,13 @@ from PhysicsTools.Heppy.physicsobjects.PhysicsObject import *
 
 class GenParticle( PhysicsObject ):
     def __str__(self):
-        base = super(GenParticle, self).__str__()
+        base = self.particlePrint()
         theStr = '{base}, status = {status:>2}'.format(base=base, status=self.status())
         return theStr
+
+import ROOT
+import FastObjects
+FastObjects.decorate(ROOT.reco.GenParticle,GenParticle)
 
 
 class GenLepton( GenParticle ):

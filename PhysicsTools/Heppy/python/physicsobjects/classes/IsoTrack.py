@@ -17,7 +17,7 @@ class IsoTrack( PhysicsObject ):
         return -1
 
     def __str__(self):
-        lep = super(IsoTrack, self).__str__()
+        lep = self.particlePrint()
         return lep
         #spec = '\t\tTau: decay = {decMode:<15}, eOverP = {eOverP:4.2f}, isoMVALoose = {isoMVALoose}'.format(
         #    decMode = tauDecayModes.intToName( self.decayMode() ),

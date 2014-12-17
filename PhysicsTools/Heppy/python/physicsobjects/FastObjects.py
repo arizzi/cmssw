@@ -12,7 +12,7 @@ def decorate(orig,deco):
    for b in deco.__bases__ :
         decorate(orig,b)
    for m in deco.__dict__ :
-        if m[0] != "_" or m[1] != "_" :
+        if m[0] != "_" or m[1] != "_" or m == "__str__":
                 setattr(orig,m,deco.__dict__[m])
                 #print m
 
