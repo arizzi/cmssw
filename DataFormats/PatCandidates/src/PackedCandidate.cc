@@ -32,8 +32,8 @@ void pat::PackedCandidate::packVtx(bool unpackAfterwards) {
         packedCovarianceDxyDxy_ = MiniFloatConverter::float32to16(dxydxy_*10000.);
         packedCovarianceDzDz_ = MiniFloatConverter::float32to16(dzdz_*10000.);
     }else{ //lower precision mode
-        packedCovarianceDxyDxy_ = pack8log(dxydxy_,-17,-4);
-        packedCovarianceDzDz_ = pack8log(dzdz_,-17,-4);
+        packedCovarianceDxyDxy_ = pack8log(dxydxy_,-15,0);
+        packedCovarianceDzDz_ = pack8log(dzdz_,-14,2);
     }
     packedCovarianceDxyDz_ = MiniFloatConverter::float32to16(dxydz_*10000.);
 
@@ -73,8 +73,8 @@ void pat::PackedCandidate::unpackVtx() const {
         dxydxy_ = MiniFloatConverter::float16to32(packedCovarianceDxyDxy_)/10000.;
         dzdz_ =MiniFloatConverter::float16to32(packedCovarianceDzDz_)/10000.;
     } else { // lower precision mode
-        dxydxy_ = unpack8log(packedCovarianceDxyDxy_,-17,-4);
-        dzdz_ =unpack8log(packedCovarianceDzDz_,-17,-4);
+        dxydxy_ = unpack8log(packedCovarianceDxyDxy_,-15,-0);
+        dzdz_ =unpack8log(packedCovarianceDzDz_,-14,2);
     }
     dxydz_ =MiniFloatConverter::float16to32(packedCovarianceDxyDz_)/10000.;
 
