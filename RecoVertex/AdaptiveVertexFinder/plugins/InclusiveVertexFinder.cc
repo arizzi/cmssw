@@ -11,7 +11,9 @@
 
 typedef TemplatedInclusiveVertexFinder<reco::TrackCollection,reco::Vertex> InclusiveVertexFinder;
 typedef TemplatedInclusiveVertexFinder<edm::View<reco::Candidate>,reco::VertexCompositePtrCandidate > InclusiveCandidateVertexFinder;
+typedef TemplatedInclusiveVertexFinder<std::vector<reco::CandidatePtr> ,reco::VertexCompositePtrCandidate > InclusiveCandidatePtrVertexFinder;
 
 
-DEFINE_FWK_MODULE(InclusiveVertexFinder);
 DEFINE_FWK_MODULE(InclusiveCandidateVertexFinder);
+DEFINE_FWK_MODULE(InclusiveCandidatePtrVertexFinder);
+DEFINE_FWK_MODULE(InclusiveVertexFinder);
