@@ -17,7 +17,9 @@
 
 typedef TemplatedVertexArbitrator<reco::TrackCollection,reco::Vertex> TrackVertexArbitrator;
 typedef TemplatedVertexArbitrator<edm::View<reco::Candidate>,reco::VertexCompositePtrCandidate> CandidateVertexArbitrator;
+typedef TemplatedVertexArbitrator<std::vector<reco::CandidatePtr>,reco::VertexCompositePtrCandidate> CandidatePtrVertexArbitrator;
 
 DEFINE_FWK_MODULE(TrackVertexArbitrator);
 DEFINE_FWK_MODULE(CandidateVertexArbitrator);
+DEFINE_FWK_MODULE(CandidatePtrVertexArbitrator);
 

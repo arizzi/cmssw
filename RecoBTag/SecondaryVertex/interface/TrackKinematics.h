@@ -24,6 +24,7 @@ class TrackKinematics {
 	~TrackKinematics() {}
 
 	void add(const reco::Track &track, double weight = 1.0);
+	void add(const reco::CandidatePtr &cand, double weight = 1.0);
 
 	TrackKinematics &operator += (const TrackKinematics &other);
 	inline TrackKinematics operator + (const TrackKinematics &other)
