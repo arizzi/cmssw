@@ -36,9 +36,6 @@ void pat::PackedCandidate::packVtx(bool unpackAfterwards) {
         packedCovarianceDzDz_ = pack8log(dzdz_,-17,-4);
     }
     packedCovarianceDxyDz_ = MiniFloatConverter::float32to16(dxydz_*10000.);
-//    packedCovarianceDxyDxy_ = pack8log(dxydxy_,-15,-1); // MiniFloatConverter::float32to16(dxydxy_*10000.);
-//    packedCovarianceDxyDz_ = pack8log(dxydz_,-20,-1); //MiniFloatConverter::float32to16(dxydz_*10000.);
-//  packedCovarianceDzDz_ = pack8log(dzdz_,-13,-1); //MiniFloatConverter::float32to16(dzdz_*10000.);
 
     packedCovarianceDptDpt_ = pack8logCeil(dptdpt_,-15,0);
     packedCovarianceDetaDeta_ = pack8logCeil(detadeta_,-20,-5);
@@ -46,22 +43,6 @@ void pat::PackedCandidate::packVtx(bool unpackAfterwards) {
     packedCovarianceDphiDxy_ = pack8log(dphidxy_,-17,-4); // MiniFloatConverter::float32to16(dphidxy_*10000.);
     packedCovarianceDlambdaDz_ = pack8log(dlambdadz_,-17,-4); // MiniFloatConverter::float32to16(dlambdadz_*10000.);
 
-  /*packedCovarianceDptDpt_ = pack8logCeil(dptdpt_,-15,5,32);
-    packedCovarianceDetaDeta_ = pack8logCeil(detadeta_,-20,0,32);
-    packedCovarianceDphiDphi_ = pack8logCeil(dphidphi_,-15,5,32);
-    packedCovarianceDphiDxy_ = pack8log(dphidxy_,-17,-4); // MiniFloatConverter::float32to16(dphidxy_*10000.);
-    packedCovarianceDlambdaDz_ = pack8log(dlambdadz_,-17,-4); // MiniFloatConverter::float32to16(dlambdadz_*10000.);
-
-*/
-/*  packedCovarianceDphiDxy_ =  MiniFloatConverter::float32to16(dphidxy_*10000.);
-    packedCovarianceDlambdaDz_ =  MiniFloatConverter::float32to16(dlambdadz_*10000.);
-    packedCovarianceDetaDeta_ =  MiniFloatConverter::float32to16(detadeta_*10000.);
-    packedCovarianceDphiDphi_ =  MiniFloatConverter::float32to16(dphidphi_*10000.);
-    packedCovarianceDptDpt_ =  MiniFloatConverter::float32to16(dptdpt_*10000.);
-*/
-//    packedCovarianceDphiDxy_ = pack8log(dphidxy_,-17,-4); // MiniFloatConverter::float32to16(dphidxy_*10000.);
-//    packedCovarianceDlambdaDz_ = pack8log(dlambdadz_,-17,-4); // MiniFloatConverter::float32to16(dlambdadz_*10000.);
- 
    if (unpackAfterwards) unpackVtx();
 }
 
@@ -82,28 +63,12 @@ void pat::PackedCandidate::unpackVtx() const {
     vertex_ = Point(pv.X() - dxy_ * s,
                     pv.Y() + dxy_ * c,
                     pv.Z() + dz_ ); // for our choice of using the PCA to the PV, by definition the remaining term -(dx*cos(phi) + dy*sin(phi))*(pz/pt) is zero
-//  dxydxy_ = unpack8log(packedCovarianceDxyDxy_,-15,-1);
-//  dxydz_ = unpack8log(packedCovarianceDxyDz_,-20,-1);
-//  dzdz_ = unpack8log(packedCovarianceDzDz_,-13,-1);
-  dphidxy_ = unpack8log(packedCovarianceDphiDxy_,-17,-4);
+    dphidxy_ = unpack8log(packedCovarianceDphiDxy_,-17,-4);
     dlambdadz_ = unpack8log(packedCovarianceDlambdaDz_,-17,-4);
     dptdpt_ = unpack8log(packedCovarianceDptDpt_,-15,0);
     detadeta_ = unpack8log(packedCovarianceDetaDeta_,-20,-5);
     dphidphi_ = unpack8log(packedCovarianceDphiDphi_,-15,0);
-/*
-  dphidxy_ = unpack8log(packedCovarianceDphiDxy_,-17,-4);
-    dlambdadz_ = unpack8log(packedCovarianceDlambdaDz_,-17,-4);
-    dptdpt_ = unpack8log(packedCovarianceDptDpt_,-15,5,32);
-    detadeta_ = unpack8log(packedCovarianceDetaDeta_,-20,0,32);
-    dphidphi_ = unpack8log(packedCovarianceDphiDphi_,-15,5,32);
-*/
 
-/* dphidxy_ = MiniFloatConverter::float16to32(packedCovarianceDphiDxy_)/10000.;
- dlambdadz_ = MiniFloatConverter::float16to32(packedCovarianceDlambdaDz_)/10000.;
- dptdpt_ = MiniFloatConverter::float16to32(packedCovarianceDptDpt_)/10000.;
- detadeta_ = MiniFloatConverter::float16to32(packedCovarianceDetaDeta_)/10000.;
- dphidphi_ = MiniFloatConverter::float16to32(packedCovarianceDphiDphi_)/10000.;
-*/
     if(packedHits_ !=0) {   // higher precision mode
         dxydxy_ = MiniFloatConverter::float16to32(packedCovarianceDxyDxy_)/10000.;
         dzdz_ =MiniFloatConverter::float16to32(packedCovarianceDzDz_)/10000.;
@@ -112,9 +77,7 @@ void pat::PackedCandidate::unpackVtx() const {
         dzdz_ =unpack8log(packedCovarianceDzDz_,-17,-4);
     }
     dxydz_ =MiniFloatConverter::float16to32(packedCovarianceDxyDz_)/10000.;
-/*  dphidxy_ = MiniFloatConverter::float16to32(packedCovarianceDphiDxy_)/10000.;
-    dlambdadz_ =MiniFloatConverter::float16to32(packedCovarianceDlambdaDz_)/10000.;
-*/
+
     unpackedVtx_ = true;
 }
 
