@@ -190,6 +190,13 @@ namespace pat {
     virtual void setTrackProperties( const reco::Track & tk ) {
 	setTrackProperties(tk,tk.covariance());
     }	
+    
+    ///this should be used for low pt tracks when we want to store only IP errors rather than the covariance
+    virtual void setIPErrors(float dzError, float dxyError)
+    {
+       dxydxy_ = dxyError*dxyError;
+       dzdz_ = dzError*dzError;
+    }
  
     int numberOfPixelHits() const { return packedHits_ & 0x7; }
     int numberOfHits() const { return (packedHits_ >> 3) + numberOfPixelHits(); }
@@ -226,7 +233,12 @@ namespace pat {
     virtual float dzError() const { maybeUnpackBoth(); return sqrt(dzdz_); }
     /// uncertainty on dxy
     virtual float dxyError() const { maybeUnpackBoth(); return sqrt(dxydxy_); }
+   
+    /// check if track details are available for this packed candidate
+    virtual bool hasTrackDetails() const {return packedHits_!=0; }
 
+    /// check if track dzError and dxyError are available for this packed candidate
+    virtual bool hasIPErrors() const {return packedCovarianceDxyDxy_!=0; }
 
     /// Return reference to a pseudo track made with candidate kinematics, parameterized error for eta,phi,pt and full IP covariance	
     virtual const reco::Track & pseudoTrack() const { if (!unpackedTrk_) unpackTrk(); return track_; }
