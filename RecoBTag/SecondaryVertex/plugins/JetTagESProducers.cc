@@ -31,14 +31,6 @@ typedef GenericMVAJetTagComputerWrapper<CombinedSVComputer,
 	reco::CandIPTagInfo,         cipTagInfos,
 	reco::CandSecondaryVertexTagInfo, csvTagInfos> CandidateCombinedSVJetTagComputer;
 
-typedef GenericMVAJetTagComputerWrapper<CombinedSVComputerV2,
-	reco::TrackIPTagInfo,         ipTagInfos,
-	reco::SecondaryVertexTagInfo, svTagInfos> CombinedSVJetTagComputerV2;
-
-typedef GenericMVAJetTagComputerWrapper<CombinedSVComputerV2,
-        reco::CandIPTagInfo,         cipTagInfos,
-        reco::CandSecondaryVertexTagInfo, csvTagInfos> CandidateCombinedSVJetTagComputerV2;
-
 typedef GenericMVAJetTagComputerWrapper<CombinedSVSoftLeptonComputer,
 	reco::TrackIPTagInfo,         ipTagInfos,
 	reco::SecondaryVertexTagInfo, svTagInfos,

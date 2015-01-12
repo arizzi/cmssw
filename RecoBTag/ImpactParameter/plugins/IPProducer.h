@@ -120,7 +120,7 @@ namespace IPProducerHelpers {
 				      }
 				      else if(viewWorks){
 					      for(size_t j=0;j<cands->size();j++) {
-						      if((*cands)[j].bestTrack()!=0 &&  ROOT::Math::VectorUtil::DeltaR((*cands)[j].p4(),(*jets)[i].p4()) < maxDeltaR
+						      if((*cands)[j].bestTrack()!=0 &&  ROOT::Math::VectorUtil::DeltaR2((*cands)[j].p4(),(*jets)[i].p4()) < maxDeltaR2
 								      && ( (*cands)[j].charge() !=0 || (*cands)[j].pdgId() == 310 )){
 							      m_map[i].push_back(cands->ptrAt(j));	
 						      }
@@ -129,7 +129,7 @@ namespace IPProducerHelpers {
 				      else
 				      {
 					      for(size_t j=0;j<candsPtr->size();j++) {
-						      if((*candsPtr)[j]->bestTrack()!=0 &&  ROOT::Math::VectorUtil::DeltaR((*candsPtr)[j]->p4(),(*jets)[i].p4()) < maxDeltaR
+						      if((*candsPtr)[j]->bestTrack()!=0 &&  ROOT::Math::VectorUtil::DeltaR2((*candsPtr)[j]->p4(),(*jets)[i].p4()) < maxDeltaR2
 								      && ( (*candsPtr)[j]->charge() !=0 || (*candsPtr)[j]->pdgId() == 310 )){
 							      m_map[i].push_back((*candsPtr)[j]); 
 						      }
@@ -142,9 +142,9 @@ namespace IPProducerHelpers {
 		      std::vector<std::vector<reco::CandidatePtr> > m_map;	
                       edm::EDGetTokenT<edm::View<reco::Jet> > token_jets;
                       edm::EDGetTokenT<edm::View<reco::Candidate> >token_cands;
+		      bool   explicitJTA;
                       edm::EDGetTokenT<std::vector<reco::CandidatePtr> >token_candsPtr;
 		      double maxDeltaR;
-		      bool   explicitJTA;
       };
 }
 template <class Container, class Base, class Helper> 
