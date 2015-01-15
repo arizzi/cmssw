@@ -181,19 +181,19 @@ void GEDPrimaryVertex::produce(Event& iEvent,  const EventSetup& iSetup) {
      auto pvWithQuality = pfToPVMap[(*pfCandidatesRef)[i]];
 
      if(producePFNoPileUp_ && produceSortedVertices_) 
-         if(pvWithQuality.first == newToOld[0] and pvWithQuality.second <= qualityCut_) 
+         if(pvWithQuality.first == newToOld[0] and pvWithQuality.second >= qualityCut_) 
                    pfCollectionNOPUOutput->push_back((*pfCandidatesRef)[i]);
 
      if(producePFPileUp_ && produceSortedVertices_) 
-         if(pvWithQuality.first != newToOld[0] and pvWithQuality.second <= qualityCut_) 
+         if(pvWithQuality.first != newToOld[0] and pvWithQuality.second >= qualityCut_) 
                    pfCollectionPUOutput->push_back((*pfCandidatesRef)[i]);
 
      if(producePFNoPileUp_ && produceOriginalMapping_) 
-         if(pvWithQuality.first == 0 and pvWithQuality.second <= qualityCut_) 
+         if(pvWithQuality.first == 0 and pvWithQuality.second >= qualityCut_) 
                    pfCollectionNOPUOriginalOutput->push_back((*pfCandidatesRef)[i]);
 
      if(producePFPileUp_ && produceOriginalMapping_) 
-         if(pvWithQuality.first != 0 and pvWithQuality.second <= qualityCut_) 
+         if(pvWithQuality.first != 0 and pvWithQuality.second >= qualityCut_) 
                    pfCollectionPUOriginalOutput->push_back((*pfCandidatesRef)[i]);
 
   }              

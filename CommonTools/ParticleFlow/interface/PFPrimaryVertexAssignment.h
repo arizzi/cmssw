@@ -14,7 +14,7 @@
 
 class PFPrimaryVertexAssignment {
  public:
-  enum Quality {UsedInFit=0,PrimaryDz,BTrack,OtherDz,NotReconstructedPrimary,Unassigned=99};
+  enum Quality {UsedInFit=7,PrimaryDz=6,PrimaryV0=5,BTrack=4,Unused=3,OtherDz=2,NotReconstructedPrimary=1,Unassigned=0};
  
   PFPrimaryVertexAssignment(const edm::ParameterSet& iConfig):
    maxDzSigForPrimaryAssignment_(iConfig.getParameter<double>("maxDzSigForPrimaryAssignment")),
