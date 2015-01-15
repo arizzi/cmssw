@@ -146,7 +146,7 @@ void GEDPrimaryVertex::produce(Event& iEvent,  const EventSetup& iSetup) {
       std::vector<int> pfToSortedPVQualityVector;
       for(size_t i=0;i<pfToPVVector.size();i++) {
         pfToSortedPVVector.push_back(oldToNew[pfToPVVector[i]]);
-        pfToSortedPVQualityVector.push_back(oldToNew[pfToPVQualityVector[i]]);
+        pfToSortedPVQualityVector.push_back(pfToPVQualityVector[i]);
       }
 
       auto_ptr< reco::VertexCollection>  sortedVerticesOutput( new reco::VertexCollection );
