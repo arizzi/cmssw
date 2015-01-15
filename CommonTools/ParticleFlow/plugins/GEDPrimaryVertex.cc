@@ -29,6 +29,7 @@ GEDPrimaryVertex::GEDPrimaryVertex(const edm::ParameterSet& iConfig) :
   produceOriginalMapping_=true;
   produceSortedVertices_=true;
   producePFPileUp_=true;
+  producePFNoPileUp_=true;
 
 
   if(produceOriginalMapping_){
@@ -137,7 +138,7 @@ void GEDPrimaryVertex::produce(Event& iEvent,  const EventSetup& iSetup) {
 
   if(produceOriginalMapping_){
       auto_ptr< PFCandToVertex>  pfCandToVertexOriginalOutput( new PFCandToVertex );
-    
+      //FIXME: todo    
   }
 
   if(produceSortedVertices_){
@@ -153,13 +154,22 @@ void GEDPrimaryVertex::produce(Event& iEvent,  const EventSetup& iSetup) {
          sortedVerticesOutput->push_back((*vertices)[newToOld[i]]); 
       }
     edm::OrphanHandle<reco::VertexCollection> oh = iEvent.put( sortedVerticesOutput);
-/*    auto_ptr< PFCandToVertex>  pfCandToVertexOutput( new PFCandToVertex(oh) );
+    auto_ptr< PFCandToVertex>  pfCandToVertexOutput( new PFCandToVertex(oh) );
+    auto_ptr< PFCandToVertexQuality>  pfCandToVertexQualityOutput( new PFCandToVertexQuality() );
     PFCandToVertex::Filler cand2VertexFiller(*pfCandToVertexOutput);
-    if(getFromFwdPtr)
-       cand2VertexFiller.fill(pfCandidates,pfToSortedPVVector.begin(),pfToSortedPVVector.end());
-    else 
-       cand2VertexFiller.fill(pfView,pfToSortedPVVector.begin(),pfToSortedPVVector.end());
-    iEvent.put( pfCandToVertexOutput );*/
+    PFCandToVertexQuality::Filler cand2VertexQualityFiller(*pfCandToVertexQualityOutput);
+
+    if(getFromFwdPtr) {
+       cand2VertexFiller.insert(pfCandidates,pfToSortedPVVector.begin(),pfToSortedPVVector.end());
+       cand2VertexQualityFiller.insert(pfCandidates,pfToSortedPVQualityVector.begin(),pfToSortedPVQualityVector.end());
+    } else  {
+       cand2VertexFiller.insert(pfView,pfToSortedPVVector.begin(),pfToSortedPVVector.end());
+       cand2VertexQualityFiller.insert(pfView,pfToSortedPVQualityVector.begin(),pfToSortedPVQualityVector.end());
+    }
+    cand2VertexFiller.fill();
+    cand2VertexQualityFiller.fill();
+    iEvent.put( pfCandToVertexOutput );
+    iEvent.put( pfCandToVertexQualityOutput );
   }
 
   auto_ptr< PFCollection >  pfCollectionNOPUOriginalOutput( new PFCollection );
@@ -192,37 +202,6 @@ void GEDPrimaryVertex::produce(Event& iEvent,  const EventSetup& iSetup) {
   if(producePFNoPileUp_ && produceOriginalMapping_) iEvent.put(pfCollectionNOPUOriginalOutput,"originalNoPileUp" );
   if(producePFPileUp_ && produceOriginalMapping_) iEvent.put(pfCollectionPUOriginalOutput,"originalPileUp" );
   
-    //     std::auto_ptr<edm::Association<pat::PackedCandidateCollection> > pf2pc(new edm::Association<pat::PackedCandidateCollection>(oh   ));
-    //         std::auto_ptr<edm::Association<reco::PFCandidateCollection   > > pc2pf(new edm::Association<reco::PFCandidateCollection   >(cands));
-    //             edm::Association<pat::PackedCandidateCollection>::Filler pf2pcFiller(*pf2pc);
-    //                 edm::Association<reco::PFCandidateCollection   >::Filler pc2pfFiller(*pc2pf);
-    //                 #ifdef CRAZYSORT
-    //                     pf2pcFiller.insert(cands, jetOrderReverse.begin(), jetOrderReverse.end());
-    //                         pc2pfFiller.insert(oh   , jetOrder.begin(), jetOrder.end());
-    //                         #else
-    //                             pf2pcFiller.insert(cands, mapping.begin(), mapping.end());
-    //                                 pc2pfFiller.insert(oh   , mapping.begin(), mapping.end());
-    //                                 #endif
-    //                                     // include also the mapping track -> packed PFCand
-    //                                         pf2pcFiller.insert(TKOrigs, mappingTk.begin(), mappingTk.end());
-    //
-    //                                             pf2pcFiller.fill();
-    //                                                 pc2pfFiller.fill();
-    //                                                     iEvent.put(pf2pc);
-    //                                                         iEvent.put(pc2pf);
-    //
-  
-
-
-    // for ( PFCollection::const_iterator byValueBegin = pileUpAlgo_.getPFCandidatesFromPU().begin(),
-    // 	    byValueEnd = pileUpAlgo_.getPFCandidatesFromPU().end(), ibyValue = byValueBegin;
-    // 	  ibyValue != byValueEnd; ++ibyValue ) {
-    //   pOutputByValue->push_back( **ibyValue );
-    // }
 
 } 
-  // outsize of the loop to fill the collection anyway even when disabled
-//  iEvent.put( pOutput );
-  // iEvent.put( pOutputByValue );
-//}
 
