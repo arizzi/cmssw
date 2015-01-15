@@ -187,7 +187,10 @@ void GEDPrimaryVertex::produce(Event& iEvent,  const EventSetup& iSetup) {
                    pfCollectionPUOriginalOutput->push_back((*pfCandidatesRef)[i]);
 
   }              
-
+  if(producePFNoPileUp_ && produceSortedVertices_) iEvent.put(pfCollectionNOPUOutput,"NoPileUp" );
+  if(producePFPileUp_ && produceSortedVertices_) iEvent.put(pfCollectionPUOutput, "PileUp");
+  if(producePFNoPileUp_ && produceOriginalMapping_) iEvent.put(pfCollectionNOPUOriginalOutput,"originalNoPileUp" );
+  if(producePFPileUp_ && produceOriginalMapping_) iEvent.put(pfCollectionPUOriginalOutput,"originalPileUp" );
   
     //     std::auto_ptr<edm::Association<pat::PackedCandidateCollection> > pf2pc(new edm::Association<pat::PackedCandidateCollection>(oh   ));
     //         std::auto_ptr<edm::Association<reco::PFCandidateCollection   > > pc2pf(new edm::Association<reco::PFCandidateCollection   >(cands));

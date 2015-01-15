@@ -11,6 +11,8 @@ PFPrimaryVertexAssignment::chargedHadronVertex( const reco::VertexCollection& ve
                                    const edm::View<reco::Candidate>& jets,
                                    const TransientTrackBuilder& builder) const {
 
+  if(pfcand.trackRef().isNull())
+     return std::pair<int,PFPrimaryVertexAssignment::Quality>(-1,PFPrimaryVertexAssignment::Unassigned);
   
   auto const & track = pfcand.trackRef();
   int iVertex = -1;

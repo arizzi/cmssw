@@ -4,106 +4,49 @@
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "TrackingTools/IPTools/interface/IPTools.h"
+#include <fastjet/internal/base.hh>
+#include "fastjet/PseudoJet.hh"
+#include "fastjet/JetDefinition.hh"
+#include "fastjet/ClusterSequence.hh"
+#include "fastjet/Selector.hh"
+#include "fastjet/PseudoJet.hh"
+
+using namespace fastjet;
+using namespace std;
+
+
 float PFPrimaryVertexSorting::score(const reco::Vertex & pv, std::vector<std::pair<const reco::PFCandidate &,PFPrimaryVertexAssignment::Quality> > pfCands ) const {
-//float PFPrimaryVertexSorting::score(reco::Vertex const&, std::vector<std::pair<reco::PFCandidate const&, PFPrimaryVertexAssignment::Quality>, std::allocator<std::pair<reco::PFCandidate const&, PFPrimaryVertexAssignment::Quality> > >)  const {
+  typedef math::XYZTLorentzVector LorentzVector;
  float sumPt2=0;
- for(auto const & pf  : pfCands) {
+ float sumEt=0;
+ LorentzVector met;
+/* for(auto const & pf  : pfCands) {
       sumPt2+=pf.first.pt()*pf.first.pt();
+  }
+*/
+
+  std::vector<fastjet::PseudoJet> fjInputs_;  
+  fjInputs_.clear();
+  for (auto const &o : pfCands) {
+      int absId=abs(o.first.pdgId());
+      if(absId==13 or absId == 11) {
+           sumPt2+=o.first.pt()*o.first.pt();
+           met+=o.first.p4();
+           sumEt+=o.first.pt();
+      } else {
+         fjInputs_.push_back(fastjet::PseudoJet(o.first.px(),o.first.py(),o.first.pz(),o.first.p4().E()));
+      }
+  }
+  fastjet::ClusterSequence sequence( fjInputs_, JetDefinition(antikt_algorithm, 0.4));
+  auto jets = fastjet::sorted_by_pt(sequence.inclusive_jets(0));
+  for (const auto & pj : jets) {
+    auto p4 = LorentzVector( pj.px(), pj.py(), pj.pz(), pj.e() ) ;
+     sumPt2+=p4.pt()*p4.pt()*0.8*0.8;
+     met+=p4;
+     sumEt+=p4.pt();
   }
 
  return sumPt2;
 }
-/*
-  auto const & track = pfcand.trackRef();
-  int iVertex = -1;
-  size_t index=0;
-  typedef reco::VertexCollection::const_iterator IV;
-  typedef reco::Vertex::trackRef_iterator IT;
-  float bestweight=0;
-  for( auto const & vtx : vertices) {
-      float w = vtx.trackWeight(track);
-      if (w > bestweight){
-          bestweight=w;
-          iVertex=index;
-        }        
-      index++;
-  }
 
-
-  if(iVertex >= 0 ) return std::pair<int,PFPrimaryVertexSorting::Quality>(iVertex,PFPrimaryVertexSorting::UsedInFit);
-
-    double dzmin = 1e99;
-    int vtxIdMinDz = -1;
-    for(IV iv=vertices.begin(); iv!=vertices.end(); ++iv) {
-      double dz = std::abs(track->dz(iv->position()));
-      if(dz<dzmin) {
-        dzmin = dz;
-        vtxIdMinDz = iv-vertices.begin();
-      }
-   }
-  // first use "closest in Z" with tight cuts (targetting primary particles)
-    if(vtxIdMinDz>=0 and (dzmin < maxDzForPrimaryAssignment_ or dzmin/track->dzError() < maxDzSigForPrimaryAssignment_ ))
-    {
-        iVertex=vtxIdMinDz;
-    }
-  if(iVertex >= 0 ) return std::pair<int,PFPrimaryVertexSorting::Quality>(iVertex,PFPrimaryVertexSorting::PrimaryDz);
-
-  // if track not assigned yet, it could be a b-decay secondary , use jet axis dist criterion
-    // first find the closest jet within maxJetDeltaR_
-    int jetIdx = -1;
-    double minDeltaR = maxJetDeltaR_;
-    for(edm::View<reco::Candidate>::const_iterator ij=jets.begin(); ij!=jets.end(); ++ij)
-    {
-      if( ij->pt() < minJetPt_ ) continue; // skip jets below the jet Pt threshold
-
-      double deltaR = reco::deltaR( *ij, *track );
-      if( deltaR < minDeltaR )
-      {
-        minDeltaR = deltaR;
-        jetIdx = std::distance(jets.begin(), ij);
-      }
-    }
-    // if jet found
-    if( jetIdx!=-1 )
-    {
-      reco::TransientTrack transientTrack = builder.build(*track);
-      GlobalVector direction(jets.at(jetIdx).px(), jets.at(jetIdx).py(), jets.at(jetIdx).pz());
-      // find the vertex with the smallest distanceToJetAxis that is still within maxDistaneToJetAxis_
-      int vtxIdx = -1;
-      double minDistanceToJetAxis = maxDistanceToJetAxis_;
-      for(IV iv=vertices.begin(); iv!=vertices.end(); ++iv)
-      {
-        // only check for vertices that are close enough in Z and for tracks that have not too high dXY
-        if(std::abs(track->dz(iv->position())) > maxDzForJetAxisAssigment_ || std::abs(track->dxy(iv->position())) > maxDxyForJetAxisAssigment_) 
-          continue;
-
-        double distanceToJetAxis = IPTools::jetTrackDistance(transientTrack, direction, *iv).second.value();
-        if( distanceToJetAxis < minDistanceToJetAxis )
-        {
-          minDistanceToJetAxis = distanceToJetAxis;
-          vtxIdx = std::distance(vertices.begin(), iv);
-        }
-      }
-      if( vtxIdx>=0 )
-      {
-        iVertex=vtxIdx;
-      }
-    }
-  if(iVertex >= 0 )
-     return std::pair<int,PFPrimaryVertexSorting::Quality>(iVertex,PFPrimaryVertexSorting::BTrack);
-
-  // if the track is not compatible with other PVs but is compatible with the BeamSpot, we may simply have not reco'ed the PV!
-  if(track->dxy(vertices[0].position())<maxDxyForNotReconstructedPrimary_ && track->dxy(vertices[0].position())/track->dxyError()<maxDxySigForNotReconstructedPrimary_)
-     return std::pair<int,PFPrimaryVertexSorting::Quality>(-1,PFPrimaryVertexSorting::NotReconstructedPrimary);
- 
-  //FIXME: here we could better handle V0s and NucInt
-
-  // all other tracks could be non-B secondaries and we just attach them with closest Z
-  if(vtxIdMinDz>=0)
-     return std::pair<int,PFPrimaryVertexSorting::Quality>(vtxIdMinDz,PFPrimaryVertexSorting::OtherDz);
-
-  //If for some reason even the dz failed (when?) we consider the track not assigned
-  return std::pair<int,PFPrimaryVertexSorting::Quality>(-1,PFPrimaryVertexSorting::Unassigned);
-}
-*/
 
