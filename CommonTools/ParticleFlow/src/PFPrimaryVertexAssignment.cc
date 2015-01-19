@@ -5,6 +5,8 @@
 #include "DataFormats/Math/interface/deltaR.h"
 #include "TrackingTools/IPTools/interface/IPTools.h"
 
+
+
 std::pair<int,PFPrimaryVertexAssignment::Quality>
 PFPrimaryVertexAssignment::chargedHadronVertex( const reco::VertexCollection& vertices,
                                    const reco::PFCandidate& pfcand,
@@ -93,8 +95,9 @@ PFPrimaryVertexAssignment::chargedHadronVertex( const reco::VertexCollection& ve
      return std::pair<int,PFPrimaryVertexAssignment::Quality>(iVertex,PFPrimaryVertexAssignment::BTrack);
 
   // if the track is not compatible with other PVs but is compatible with the BeamSpot, we may simply have not reco'ed the PV!
+  //  we still point it to the closest in Z, but flag it as possible orphan-primary
   if(track->dxy(vertices[0].position())<maxDxyForNotReconstructedPrimary_ && track->dxy(vertices[0].position())/track->dxyError()<maxDxySigForNotReconstructedPrimary_)
-     return std::pair<int,PFPrimaryVertexAssignment::Quality>(-1,PFPrimaryVertexAssignment::NotReconstructedPrimary);
+     return std::pair<int,PFPrimaryVertexAssignment::Quality>(vtxIdMinDz,PFPrimaryVertexAssignment::NotReconstructedPrimary);
  
   //FIXME: here we could better handle V0s and NucInt
 

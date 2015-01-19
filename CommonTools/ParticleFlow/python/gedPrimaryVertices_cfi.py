@@ -19,6 +19,7 @@ gedPrimaryVertices = cms.EDProducer("GEDPrimaryVertex",
     ),
   PFCandidates = cms.InputTag("particleFlow"),
   Vertices= cms.InputTag("offlinePrimaryVertices"),
+#  Jets= cms.InputTag("ak4PFJets"),
   Jets= cms.InputTag("ak4CaloJets"),
   QualityForPrimary = cms.int32(2)
 )

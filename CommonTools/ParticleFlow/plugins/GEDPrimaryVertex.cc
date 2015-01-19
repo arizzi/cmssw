@@ -114,7 +114,7 @@ void GEDPrimaryVertex::produce(Event& iEvent,  const EventSetup& iSetup) {
   std::vector< std::vector<std::pair<const reco::PFCandidate &,PFPrimaryVertexAssignment::Quality> > > pvToPFMap(vertices->size());
   for(auto const & pfToPV : pfToPVMap)
   {
-    if(pfToPV.second.first >=0 )
+    if(pfToPV.second.first >=0 and pfToPV.second.second > PFPrimaryVertexAssignment::NotReconstructedPrimary)
        pvToPFMap[pfToPV.second.first].push_back(std::pair<const reco::PFCandidate &,PFPrimaryVertexAssignment::Quality>(*pfToPV.first,pfToPV.second.second));
   }
 
