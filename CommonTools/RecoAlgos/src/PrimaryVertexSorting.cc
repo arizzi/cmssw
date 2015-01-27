@@ -14,7 +14,7 @@ using namespace fastjet;
 using namespace std;
 
 
-float PrimaryVertexSorting::score(const reco::Vertex & pv,const  std::vector<const reco::Candidate *> & cands, bool useMet ) const {
+float PrimaryVertexSorting::score(const reco::Vertex & pv,const  std::vector<const reco::Candidate *> & cands ) const {
   typedef math::XYZTLorentzVector LorentzVector;
   float sumPt2=0;
   float sumEt=0;
@@ -30,18 +30,28 @@ float PrimaryVertexSorting::score(const reco::Vertex & pv,const  std::vector<con
       sumEt+=c->pt();
     } else {
       fjInputs_.push_back(fastjet::PseudoJet(c->px(),c->py(),c->pz(),c->p4().E()));
+      fjInputs_.back().set_user_index(i);
     }
   }
   fastjet::ClusterSequence sequence( fjInputs_, JetDefinition(antikt_algorithm, 0.4));
   auto jets = fastjet::sorted_by_pt(sequence.inclusive_jets(0));
   for (const auto & pj : jets) {
     auto p4 = LorentzVector( pj.px(), pj.py(), pj.pz(), pj.e() ) ;
-    sumPt2+=p4.pt()*p4.pt()*0.8*0.8;
+    float wpt=p4.pt();
+    if(pj.constituents().size()>1) wpt*=jetWeight_;
+    float totalErrorSq=0;
+    for(const auto & co : pj.constituents() ){
+       const reco::Track * tr = cands[co.user_index()]->bestTrack();
+       if(tr!=0) totalErrorSq+=(ptErrorSubtractionFactor_*tr->ptError())*(ptErrorSubtractionFactor_*tr->ptError());
+    }
+    wpt*=wpt;
+    wpt-=totalErrorSq;
+    if (wpt> 0) sumPt2+=wpt;
     met+=p4;
     sumEt+=p4.pt();
   }
-  float metAbove = met.pt() - 2*sqrt(sumEt);
-  if(metAbove > 0 and useMet) {
+  float metAbove = met.pt() - metSubtractionFactor_*sqrt(sumEt);
+  if(metAbove > 0 and useMet_) {
     sumPt2+=metAbove*metAbove;
   }
   return sumPt2;

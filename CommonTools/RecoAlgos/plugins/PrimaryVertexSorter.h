@@ -60,7 +60,6 @@ class PrimaryVertexSorter : public edm::stream::EDProducer<> {
   bool producePFPileUp_;
   bool producePFNoPileUp_;
   int  qualityCut_;
-  bool useMET_;
 };
 
 
@@ -90,8 +89,7 @@ PrimaryVertexSorter<ParticlesCollection>::PrimaryVertexSorter(const edm::Paramet
   produceSortedVertices_(iConfig.getParameter<bool>("produceSortedVertices")),
   producePFPileUp_(iConfig.getParameter<bool>("producePileUpCollection")),
   producePFNoPileUp_(iConfig.getParameter<bool>("produceNoPileUpCollection")),
-  qualityCut_(iConfig.getParameter<int>("qualityForPrimary")),
-  useMET_(iConfig.getParameter<bool>("usePVMET"))
+  qualityCut_(iConfig.getParameter<int>("qualityForPrimary"))
 {
 
 
@@ -143,7 +141,7 @@ void PrimaryVertexSorter<ParticlesCollection>::produce(Event& iEvent,  const Eve
   Handle<ParticlesCollection> particlesHandle;
   iEvent.getByToken( tokenCandidates_, particlesHandle);
 
-  ParticlesCollection particles = *particlesHandle.product();
+  const ParticlesCollection & particles = *particlesHandle.product();
    std::vector<int> pfToPVVector;
   std::vector<PrimaryVertexAssignment::Quality> pfToPVQualityVector;
   //reverse mapping
@@ -175,7 +173,7 @@ void PrimaryVertexSorter<ParticlesCollection>::produce(Event& iEvent,  const Eve
   //Use multimap for sorting of indices
   std::multimap<float,int> scores;
   for(unsigned int i=0;i<vertices->size();i++){
-     scores.insert(std::pair<float,int>(-sortingAlgo_.score((*vertices)[i],pvToCandVector[i],useMET_),i));    
+     scores.insert(std::pair<float,int>(-sortingAlgo_.score((*vertices)[i],pvToCandVector[i]),i));    
   }
 
   //create indices

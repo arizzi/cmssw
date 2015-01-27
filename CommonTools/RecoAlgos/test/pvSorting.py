@@ -10,13 +10,13 @@ process.GlobalTag.globaltag = 'POSTLS172_V4::All'
 
 process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(
-     'file:8A676D55-1186-E411-921D-02163E0104B8.root'
+    'file:/scratch/arizzi/pvchoice/CMSSW_7_2_2_patch2/src/CommonTools/ParticleFlow/test/many/ZH_HToBB_ZToNuNu_M-125_13TeV_powheg-herwigpp-PU40bx25_PHYS14_25_V1-v1-40778748-2072-E411-8840-00266CFEFE1C.root'
     )
 )
 
 
 process.options   = cms.untracked.PSet( wantSummary = cms.untracked.bool(True))
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 process.load("Configuration.EventContent.EventContent_cff")
 process.out = cms.OutputModule(
     "PoolOutputModule",
@@ -30,10 +30,17 @@ process.out.outputCommands.extend(
 process.load("CommonTools.RecoAlgos.sortedPrimaryVertices_cfi")
 process.load("CommonTools.RecoAlgos.sortedPFPrimaryVertices_cfi")
 
+process.sortedPrimaryVertices.particles="trackRefsForJetsBeforeSorting"
 process.sortedPrimaryVertices.jets = "ak4CaloJets"
-process.sortedPFPrimaryVerticesNoMET = process.sortedPFPrimaryVertices.clone(usePVMET=False)
-process.sortedPrimaryVerticesNoMET = process.sortedPrimaryVertices.clone(usePVMET=False,jets="ak4CaloJets")
-process.p = cms.Path(process.sortedPFPrimaryVertices*process.sortedPrimaryVertices*process.sortedPFPrimaryVerticesNoMET*process.sortedPrimaryVerticesNoMET)
+process.sortedPFPrimaryVerticesNoMET = process.sortedPFPrimaryVertices.clone()
+process.sortedPFPrimaryVerticesNoMET.sorting.useMet = False
+process.sortedPrimaryVerticesNoMET = process.sortedPrimaryVertices.clone(jets="ak4CaloJets")
+process.sortedPrimaryVerticesNoMET.sorting.useMet = False
+
+process.p = cms.Path(
+        process.trackWithVertexRefSelectorBeforeSorting*
+        process.trackRefsForJetsBeforeSorting*
+        process.sortedPFPrimaryVertices*process.sortedPrimaryVertices*process.sortedPFPrimaryVerticesNoMET*process.sortedPrimaryVerticesNoMET)
 
 process.endpath = cms.EndPath(
     process.out

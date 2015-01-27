@@ -16,19 +16,22 @@
 
 class PrimaryVertexSorting {
  public:
-  enum Quality {UsedInFit=0,PrimaryDz,BTrack,OtherDz,NotReconstructedPrimary,Unassigned=99};
  
-  PrimaryVertexSorting(const edm::ParameterSet& iConfig)
-   //minJetPt_(iConfig.getParameter<double>("minJetPt")),
+  PrimaryVertexSorting(const edm::ParameterSet& iConfig):
+   useMet_(iConfig.getParameter<bool>("useMet")),
+   jetWeight_(iConfig.getParameter<double>("jetWeight")),
+   metSubtractionFactor_(iConfig.getParameter<double>("metSubtractionFactor")),
+   ptErrorSubtractionFactor_(iConfig.getParameter<double>("ptErrorSubtractionFactor"))
   {}
 
   ~PrimaryVertexSorting(){}
-  float score(const reco::Vertex & pv, const std::vector<const reco::Candidate *> & candidates , bool useMet) const ;
-
-
-
+  float score(const reco::Vertex & pv, const std::vector<const reco::Candidate *> & candidates ) const ;
 
  private  :
+  bool useMet_;
+  double jetWeight_;
+  double metSubtractionFactor_;
+  double ptErrorSubtractionFactor_;
 };
 
 #endif

@@ -18,6 +18,8 @@ offlinePrimaryVertices=sortedPrimaryVertices.clone(vertices="unsortedOfflinePrim
 offlinePrimaryVerticesWithBS=sortedPrimaryVertices.clone(vertices=cms.InputTag("unsortedOfflinePrimaryVertices","WithBS"), particles="trackRefsForJetsBeforeSorting")
 trackWithVertexRefSelectorBeforeSorting = trackWithVertexRefSelector.clone(vertexTag="unsortedOfflinePrimaryVertices")
 trackRefsForJetsBeforeSorting = trackRefsForJets.clone(src="trackWithVertexRefSelectorBeforeSorting")
+trackWithVertexRefSelectorBeforeSorting.ptMax = cms.double(1e9)
+trackWithVertexRefSelectorBeforeSorting.ptMin = cms.double(0)
 
 
 vertexreco = cms.Sequence(unsortedOfflinePrimaryVertices*
