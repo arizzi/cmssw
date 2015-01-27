@@ -141,7 +141,7 @@ void PrimaryVertexSorter<ParticlesCollection>::produce(Event& iEvent,  const Eve
   Handle<ParticlesCollection> particlesHandle;
   iEvent.getByToken( tokenCandidates_, particlesHandle);
 
-  ParticlesCollection particles = *particlesHandle.product();
+  const ParticlesCollection & particles = *particlesHandle.product();
    std::vector<int> pfToPVVector;
   std::vector<PrimaryVertexAssignment::Quality> pfToPVQualityVector;
   //reverse mapping
