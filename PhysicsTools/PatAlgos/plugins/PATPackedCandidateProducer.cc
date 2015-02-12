@@ -118,10 +118,7 @@ void pat::PATPackedCandidateProducer::produce(edm::Event& iEvent, const edm::Eve
     iEvent.getByToken( PVs_, PVs );
     reco::VertexRef PV(PVs.id());
     math::XYZPoint  PVpos;
-    if (!PVs->empty()) {
-        PV = reco::VertexRef(PVs, 0);
-        PVpos = PV->position();
-    }
+
 
     edm::Handle<reco::TrackCollection> TKOrigs;
     iEvent.getByToken( TKOrigs_, TKOrigs );
@@ -178,6 +175,7 @@ void pat::PATPackedCandidateProducer::produce(edm::Event& iEvent, const edm::Eve
 #else
         const reco::PFCandidate &cand=(*cands)[ic];
 #endif
+
         float phiAtVtx = cand.phi();
         const reco::Track *ctrack = 0;
         if ((abs(cand.pdgId()) == 11 || cand.pdgId() == 22) && cand.gsfTrackRef().isNonnull()) {
@@ -186,51 +184,65 @@ void pat::PATPackedCandidateProducer::produce(edm::Event& iEvent, const edm::Eve
             ctrack = &*cand.trackRef();
         }
         if (ctrack) {
-            math::XYZPoint vtx = cand.vertex();
-            pat::PackedCandidate::LostInnerHits lostHits = pat::PackedCandidate::noLostInnerHits;
+          float dist=1e99;
+          int pvi=-1;
+          for(size_t ii=0;ii<PVs->size();ii++){
+            float dz=std::abs(ctrack->dz( ((*PVs)[ii]).position()));
+            if(dz<dist) {pvi=ii;dist=dz; }
+          }
+          PV = reco::VertexRef(PVs, pvi);
+          PVpos = PV->position();
+          math::XYZPoint vtx = cand.vertex();
+          pat::PackedCandidate::LostInnerHits lostHits = pat::PackedCandidate::noLostInnerHits;
 
-//          TrajectoryStateOnSurface tsos = extrapolator.extrapolate(trajectoryStateTransform::initialFreeState(*ctrack,&*magneticField), RecoVertex::convertPos(PV->position()));
-//   vtx = tsos.globalPosition();
-//          phiAtVtx = tsos.globalDirection().phi();
-            vtx = ctrack->referencePoint();
-            phiAtVtx = ctrack->phi();
-            int nlost = ctrack->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
-            if (nlost == 0) { 
-                if (ctrack->hitPattern().hasValidHitInFirstPixelBarrel()) {
-                    lostHits = pat::PackedCandidate::validHitInFirstPixelBarrelLayer;
-                }
-            } else {
-                lostHits = ( nlost == 1 ? pat::PackedCandidate::oneLostInnerHit : pat::PackedCandidate::moreLostInnerHits);
+          //          TrajectoryStateOnSurface tsos = extrapolator.extrapolate(trajectoryStateTransform::initialFreeState(*ctrack,&*magneticField), RecoVertex::convertPos(PV->position()));
+          //   vtx = tsos.globalPosition();
+          //          phiAtVtx = tsos.globalDirection().phi();
+          vtx = ctrack->referencePoint();
+          phiAtVtx = ctrack->phi();
+          int nlost = ctrack->hitPattern().numberOfLostHits(reco::HitPattern::MISSING_INNER_HITS);
+          if (nlost == 0) { 
+            if (ctrack->hitPattern().hasValidHitInFirstPixelBarrel()) {
+              lostHits = pat::PackedCandidate::validHitInFirstPixelBarrelLayer;
             }
+          } else {
+            lostHits = ( nlost == 1 ? pat::PackedCandidate::oneLostInnerHit : pat::PackedCandidate::moreLostInnerHits);
+          }
 
-	    
-            outPtrP->push_back( pat::PackedCandidate(cand.polarP4(), vtx, phiAtVtx, cand.pdgId(), PV));
-          
-            // properties of the best track 
-            outPtrP->back().setLostInnerHits( lostHits );
-	    if(outPtrP->back().pt() > minPtForTrackProperties_) {
-                outPtrP->back().setTrackProperties(*ctrack);
-                //outPtrP->back().setTrackProperties(*ctrack,tsos.curvilinearError());
-            }
 
-            // these things are always for the CKF track
-	    if(cand.trackRef().isNonnull() && PVOrig.trackWeight(cand.trackRef()) > 0.5) {
-                outPtrP->back().setFromPV(pat::PackedCandidate::PVUsedInFit);
-	    } else {
-                outPtrP->back().setFromPV( fromPV[ic] );
-            }
-            outPtrP->back().setTrackHighPurity( cand.trackRef().isNonnull() && cand.trackRef()->quality(reco::Track::highPurity) );
-            if (cand.muonRef().isNonnull()) {
-                outPtrP->back().setMuonID(cand.muonRef()->isStandAloneMuon(), cand.muonRef()->isGlobalMuon());
-            }
-        } else {
-            outPtrP->push_back( pat::PackedCandidate(cand.polarP4(), PVpos, cand.phi(), cand.pdgId(), PV));
+          outPtrP->push_back( pat::PackedCandidate(cand.polarP4(), vtx, phiAtVtx, cand.pdgId(), PV));
+
+          // properties of the best track 
+          outPtrP->back().setLostInnerHits( lostHits );
+          if(outPtrP->back().pt() > minPtForTrackProperties_) {
+            outPtrP->back().setTrackProperties(*ctrack);
+            //outPtrP->back().setTrackProperties(*ctrack,tsos.curvilinearError());
+          }
+
+          // these things are always for the CKF track
+          if(cand.trackRef().isNonnull() && PVOrig.trackWeight(cand.trackRef()) > 0.5) {
+            outPtrP->back().setFromPV(pat::PackedCandidate::PVUsedInFit);
+          } else {
             outPtrP->back().setFromPV( fromPV[ic] );
+          }
+          outPtrP->back().setTrackHighPurity( cand.trackRef().isNonnull() && cand.trackRef()->quality(reco::Track::highPurity) );
+          if (cand.muonRef().isNonnull()) {
+            outPtrP->back().setMuonID(cand.muonRef()->isStandAloneMuon(), cand.muonRef()->isGlobalMuon());
+          }
+        } else {
+
+          if (!PVs->empty()) {
+            PV = reco::VertexRef(PVs, 0);
+            PVpos = PV->position();
+          }
+
+          outPtrP->push_back( pat::PackedCandidate(cand.polarP4(), PVpos, cand.phi(), cand.pdgId(), PV));
+          outPtrP->back().setFromPV( fromPV[ic] );
         }
 
         mapping[ic] = ic; // trivial at the moment!
         if (cand.trackRef().isNonnull() && cand.trackRef().id() == TKOrigs.id()) {
-            mappingTk[cand.trackRef().key()] = ic;
+          mappingTk[cand.trackRef().key()] = ic;
         }
 
     }
