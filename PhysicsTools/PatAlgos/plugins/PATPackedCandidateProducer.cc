@@ -117,6 +117,8 @@ void pat::PATPackedCandidateProducer::produce(edm::Event& iEvent, const edm::Eve
     const edm::Association<reco::VertexCollection> &  associatedPV=*(assoHandle.product());
     const edm::ValueMap<int>  &  associationQuality=*(assoQualityHandle.product());
            
+    edm::Handle< edm::ValueMap<float> > puppiWeight;
+    iEvent.getByToken( PuppiWeight_, puppiWeight );
  
     edm::Handle<reco::VertexCollection> PVs;
     iEvent.getByToken( PVs_, PVs );

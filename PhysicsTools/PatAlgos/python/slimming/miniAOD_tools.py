@@ -140,7 +140,7 @@ def miniAOD_customizeCommon(process):
 
     addJetCollection(process, postfix   = "", labelName = 'Puppi', jetSource = cms.InputTag('ak4PFJetsPuppi'),
                     jetCorrections = ('AK4PF', ['L1FastJet', 'L2Relative', 'L3Absolute'], ''),
-                    algo= 'AK', rParam = 0.4, btagDiscriminators = map(getModuleLabel,process.patJets.discriminatorSources))
+                    algo= 'AK', rParam = 0.4, btagDiscriminators = map(lambda x: x.getModuleLabel(),process.patJets.discriminatorSources))
 
     process.patJetGenJetMatchPuppi.matched =  'slimmedGenJets'
     process.selectedPatJetsPuppi.cut = cms.string("pt > 20")
