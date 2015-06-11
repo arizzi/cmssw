@@ -46,6 +46,7 @@ from RecoJets.JetProducers.ak4PFJets_cfi import ak4PFJets
 ## Define PFJetsCHS
 process.ak4PFJetsCHS = ak4PFJets.clone(src = 'pfCHS', doAreaFastjet = True)
 
+
 #################################################
 ## Remake PAT jets
 #################################################
@@ -63,7 +64,8 @@ addJetCollection(
     jetSource = cms.InputTag('ak4PFJetsCHS'),
     pvSource = cms.InputTag('pfCHS'),
     pfCandidates = cms.InputTag('packedPFCandidates'),
-    svSource = cms.InputTag('slimmedSecondaryVertices'),
+# cannot reuse SV because they depend on PV
+#    svSource = cms.InputTag('slimmedSecondaryVertices'),
     btagDiscriminators = bTagDiscriminators,
     jetCorrections = ('AK4PFchs', ['L1FastJet', 'L2Relative', 'L3Absolute'], 'None'),
     genJetCollection = cms.InputTag('ak4GenJetsNoNu'),
@@ -77,9 +79,17 @@ getattr(process,'selectedPatJets').cut = cms.string('pt > 10')
 #not needed in unscheduled
 #process.p = cms.Path(process.selectedPatJets)
 
+## Load IVF
+# use packed cands instead of AOD particleFlow
+# the PV is changed by the adaptPV call below
+process.load("RecoVertex.AdaptiveVertexFinder.inclusiveVertexing_cff")
+process.inclusiveCandidateVertexFinder.tracks='packedPFCandidates'
+process.candidateVertexArbitrator.tracks='packedPFCandidates'
+
 from PhysicsTools.PatAlgos.tools.pfTools import *
 ## Adapt primary vertex collection
 adaptPVs(process, pvCollection=cms.InputTag('pfCHS'))
+
 
 process.options = cms.untracked.PSet( 
         wantSummary = cms.untracked.bool(True), # while the timing of this is not reliable in unscheduled mode, it still helps understanding what was actually run 

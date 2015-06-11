@@ -1,9 +1,9 @@
 //
-// $Id: PATPackedCandidatePVFilter.cc,v 1.1 2015/06/10 arizzi Exp $
+// $Id: PATPackedCandidatePVSelector.cc,v 1.1 2015/06/10 arizzi Exp $
 //
 
 /**
-  \class    pat::PATPackedCandidatePVFilter 
+  \class    pat::PATPackedCandidatePVSelector 
   \brief    Filter PackedCandidates requiring fromPV wrt a different PV
             
   \author   Andrea Rizzi
@@ -21,10 +21,10 @@
 
 namespace pat {
 
-  class PATPackedCandidatePVFilter : public edm::EDProducer {
+  class PATPackedCandidatePVSelector : public edm::EDProducer {
     public:
-      explicit PATPackedCandidatePVFilter(const edm::ParameterSet & iConfig);
-      virtual ~PATPackedCandidatePVFilter() { }
+      explicit PATPackedCandidatePVSelector(const edm::ParameterSet & iConfig);
+      virtual ~PATPackedCandidatePVSelector() { }
 
       virtual void produce(edm::Event & iEvent, const edm::EventSetup & iSetup);
 
@@ -37,16 +37,17 @@ namespace pat {
 } // namespace
 
 
-pat::PATPackedCandidatePVFilter::PATPackedCandidatePVFilter(const edm::ParameterSet & iConfig) :
+pat::PATPackedCandidatePVSelector::PATPackedCandidatePVSelector(const edm::ParameterSet & iConfig) :
     scores_(consumes<edm::ValueMap<float> >(iConfig.getParameter<edm::InputTag>("vertexScores"))),
     cands_(consumes<edm::View<pat::PackedCandidate> >(iConfig.getParameter<edm::InputTag>("src"))),
     threshold_(iConfig.getParameter<int>("threshold"))
 {
-    produces<std::vector<edm::Ptr<reco::Candidate>> >();
+    produces<edm::PtrVector<reco::Candidate> >();
+    produces<std::vector<reco::Vertex> >();
 }
 
 void 
-pat::PATPackedCandidatePVFilter::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
+pat::PATPackedCandidatePVSelector::produce(edm::Event & iEvent, const edm::EventSetup & iSetup) {
     using namespace edm;
     using namespace std;
 
@@ -55,7 +56,8 @@ pat::PATPackedCandidatePVFilter::produce(edm::Event & iEvent, const edm::EventSe
     Handle<edm::ValueMap<float> > scores;
     iEvent.getByToken(scores_,scores);
 	
-    auto_ptr<vector<edm::Ptr<reco::Candidate>> >  out(new vector<edm::Ptr<reco::Candidate>>());
+    auto_ptr<edm::PtrVector<reco::Candidate> >  out(new edm::PtrVector<reco::Candidate>());
+    auto_ptr<vector<reco::Vertex> >  outPV(new vector<reco::Vertex>());
     if(cands.product()->size()>0) {
 	    //Find PV with highest score
 	    int ivtx=0;
@@ -66,9 +68,12 @@ pat::PATPackedCandidatePVFilter::produce(edm::Event & iEvent, const edm::EventSe
 			    float score=-1;
 			    edm::ValueMap<float>::container::const_iterator itVtx =  itVM.begin();
 			    for(unsigned int i=0; itVtx!=itVM.end(); ++itVtx,i++){
-				    if(*itVtx > score) ivtx=i;
+				    if(*itVtx > score) {ivtx=i; score=*itVtx;}
+//				    std::cout << " i,imax score,scoremax" << i << " " << ivtx << " " << *itVtx << " "<< score << std::endl;
 			    }
 		    }
+//	    std::cout << "Selected " << ivtx << std::endl;
+    	    outPV->push_back((*(*cands.product())[0].vertexRef().product())[ivtx]);
 	    }
 	    //Take only cands with fromPV >= thr relative to the found vertex
 	    for (edm::View<pat::PackedCandidate>::const_iterator it = cands->begin(), ed = cands->end(); it != ed; ++it) {
@@ -78,8 +83,9 @@ pat::PATPackedCandidatePVFilter::produce(edm::Event & iEvent, const edm::EventSe
 	    }
     }
     iEvent.put(out);
+    iEvent.put(outPV);
 }
 
 #include "FWCore/Framework/interface/MakerMacros.h"
 using namespace pat;
-DEFINE_FWK_MODULE(PATPackedCandidatePVFilter);
+DEFINE_FWK_MODULE(PATPackedCandidatePVSelector);
