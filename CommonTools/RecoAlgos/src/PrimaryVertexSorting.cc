@@ -47,7 +47,8 @@ float PrimaryVertexSorting::score(const reco::Vertex & pv,const  std::vector<con
 	sumPtErr2+=ptErr*ptErr;
     }
     auto p4 = LorentzVector( pj.px(), pj.py(), pj.pz(), pj.e() ) ;
-    if(p4.pt()*p4.pt() > sumPtErr2) sumPt2+=(p4.pt()*p4.pt()-sumPtErr2)*0.8*0.8;
+    float reducedP4=p4.pt()-sqrt(sumPtErr2);
+    if(reducedP4 > 0) sumPt2+=reducedP4*reducedP4*0.8*0.8;
     met+=p4;
     sumEt+=p4.pt();
   }
