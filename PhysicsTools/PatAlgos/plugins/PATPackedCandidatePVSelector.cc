@@ -77,7 +77,7 @@ pat::PATPackedCandidatePVSelector::produce(edm::Event & iEvent, const edm::Event
 	    }
 	    //Take only cands with fromPV >= thr relative to the found vertex
 	    for (edm::View<pat::PackedCandidate>::const_iterator it = cands->begin(), ed = cands->end(); it != ed; ++it) {
-		    if(it->fromPV(ivtx) >= threshold_){
+		    if(it->fromPV(ivtx) >= threshold_ || it->charge() == 0 ){
 			    out->push_back(cands->ptrAt(it-cands->begin()));
 		    }
 	    }
