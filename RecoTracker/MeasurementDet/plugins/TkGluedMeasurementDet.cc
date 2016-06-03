@@ -68,10 +68,11 @@ using namespace std;
 
 TkGluedMeasurementDet::TkGluedMeasurementDet( const GluedGeomDet* gdet, 
 					      const SiStripRecHitMatcher* matcher,
-                                              const StripClusterParameterEstimator* cpe) :
+                                              const StripClusterParameterEstimator* cpe,
+                                              bool faulty) :
   MeasurementDet(gdet), 
   theMatcher(matcher),  theCPE(cpe),
-  theMonoDet(nullptr), theStereoDet(nullptr)
+  theMonoDet(nullptr), theStereoDet(nullptr), isFaulty(faulty)
 {}
 
 void TkGluedMeasurementDet::init(const MeasurementDet* monoDet,
@@ -129,7 +130,10 @@ bool TkGluedMeasurementDet::measurements( const TrajectoryStateOnSurface& stateO
    
    
    if (result.size()>oldSize) return true;
-   
+   if(isFaulty){
+       result.add(theInactiveHit, 0.F);
+       return true;
+   }
    //LogDebug("TkStripMeasurementDet") << "No hit found on TkGlued. Testing strips...  ";
    const BoundPlane &gluedPlane = geomDet().surface();
    if (  // sorry for the big IF, but I want to exploit short-circuiting of logic

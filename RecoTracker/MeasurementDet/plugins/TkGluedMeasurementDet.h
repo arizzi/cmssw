@@ -19,7 +19,7 @@ class GluedGeomDet;
 class dso_hidden TkGluedMeasurementDet final : public MeasurementDet {
 public:
 
-  TkGluedMeasurementDet( const GluedGeomDet* gdet,const SiStripRecHitMatcher* matcher, const StripClusterParameterEstimator* cpe);
+  TkGluedMeasurementDet( const GluedGeomDet* gdet,const SiStripRecHitMatcher* matcher, const StripClusterParameterEstimator* cpe, bool faulty = false);
   void init(const MeasurementDet* monoDet,
 	    const MeasurementDet* stereoDet);
 
@@ -55,7 +55,7 @@ private:
   const StripClusterParameterEstimator* theCPE;
   const TkStripMeasurementDet*       theMonoDet;
   const TkStripMeasurementDet*       theStereoDet;
-
+  bool                               isFaulty;
 
   template<typename Collector>
   void doubleMatch(const TrajectoryStateOnSurface& ts, const MeasurementTrackerEvent & data, Collector & collector) const  dso_internal;

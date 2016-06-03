@@ -118,6 +118,9 @@ public:
   std::vector<TkGluedMeasurementDet> theGluedDets;
   std::vector<TkStackMeasurementDet> theStackDets;
 
+  std::vector<uint32_t> faultyMasks;
+  std::vector<uint32_t> faultyMatches;
+
   const SiPixelFedCabling*              thePixelCabling;
 
   void initialize();
@@ -127,7 +130,7 @@ public:
   void addStripDet( const GeomDet* gd);
   void addPixelDet( const GeomDet* gd);
 
-  void addGluedDet( const GluedGeomDet* gd);
+  void addGluedDet( const GluedGeomDet* gd, bool faulty=false);
   void addStackDet( const StackGeomDet* gd);
 
   void initGluedDet( TkGluedMeasurementDet & det);
@@ -136,7 +139,7 @@ public:
   void addDets( const TrackingGeometry::DetContainer& dets, bool subIsPixel);
 
   bool checkDets();
-
+  bool checkFaulty(uint32_t detid);
 
   void initializeStripStatus (const SiStripQuality *stripQuality, int qualityFlags, int qualityDebugFlags);
 

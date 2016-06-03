@@ -95,6 +95,10 @@ MeasurementTrackerImpl::MeasurementTrackerImpl(const edm::ParameterSet&         
   theStDetConditions(hitMatcher,stripCPE),
   thePxDetConditions(pixelCPE)
 {
+  if(pset_.existsAs<std::vector<uint32_t> >("faultyMasks") && pset_.existsAs<std::vector<uint32_t> >("faultyMatches")) {
+	    faultyMasks=pset_.getParameter<std::vector<uint32_t> >("faultyMasks");
+	    faultyMatches=pset_.getParameter<std::vector<uint32_t> >("faultyMatches");
+  }
   this->initialize();
   this->initializeStripStatus(stripQuality, stripQualityFlags, stripQualityDebugFlags);
   this->initializePixelStatus(pixelQuality, pixelCabling, pixelQualityFlags, pixelQualityDebugFlags);
@@ -107,9 +111,8 @@ MeasurementTrackerImpl::~MeasurementTrackerImpl()
 
 void MeasurementTrackerImpl::initialize()
 { 
-
   bool subIsPixel = false;
-
+ 
   //if the TkGeometry has the subDet vector filled, the theDetMap is filled, otherwise nothing should happen
   if(theTrackerGeom->detsPXB().size()!=0) {
     subIsPixel = GeomDetEnumerators::isTrackerPixel(theTrackerGeom->geomDetSubDetector(theTrackerGeom->detsPXB().front()->geographicalId().subdetId()));
@@ -198,9 +201,8 @@ void MeasurementTrackerImpl::initPxMeasurementConditionSet(std::vector<TkPixelMe
 }
 
 
-
-
 void MeasurementTrackerImpl::addDets( const TrackingGeometry::DetContainer& dets, bool subIsPixel){
+
 
   //in phase2, we can have composed subDetector made by Pixel or Strip
   for (TrackerGeometry::DetContainer::const_iterator gd=dets.begin();
@@ -225,7 +227,7 @@ void MeasurementTrackerImpl::addDets( const TrackingGeometry::DetContainer& dets
         throw MeasurementDetException("MeasurementTracker ERROR: GeomDet neither DetUnit nor GluedDet nor StackDet");
       }
       if(gluedDet != 0)
-        addGluedDet(gluedDet);
+        addGluedDet(gluedDet,checkFaulty(gdu->geographicalId().rawId()));
       else
         addStackDet(stackDet);
 
@@ -239,6 +241,14 @@ bool MeasurementTrackerImpl::checkDets(){
     return true;
   return false;
 }
+
+bool MeasurementTrackerImpl::checkFaulty(uint32_t detid){
+  for(size_t i=0;i< faultyMasks.size();i++){
+	if( (detid & faultyMasks[i]) == faultyMatches[i]) return true;
+  }
+  return false;
+}
+
 
 void MeasurementTrackerImpl::addStripDet( const GeomDet* gd)
 {
@@ -260,9 +270,9 @@ void MeasurementTrackerImpl::addPixelDet( const GeomDet* gd)
   }
 }
 
-void MeasurementTrackerImpl::addGluedDet( const GluedGeomDet* gd)
+void MeasurementTrackerImpl::addGluedDet( const GluedGeomDet* gd, bool faulty)
 {
-  theGluedDets.push_back(TkGluedMeasurementDet( gd, theStDetConditions.matcher(), theStDetConditions.stripCPE() ));
+  theGluedDets.push_back(TkGluedMeasurementDet( gd, theStDetConditions.matcher(), theStDetConditions.stripCPE(), faulty ));
 }
 
 void MeasurementTrackerImpl::addStackDet( const StackGeomDet* gd)
