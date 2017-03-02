@@ -116,6 +116,7 @@ class Tree(object):
             
     def fill(self, varName, value ):
 #        value
+#        print varName
         if(self.storageType=='F' or self.storageType=='D' ):
           f=float(value)
           i=((struct.unpack('<I', struct.pack('<f', f))[0]  ) & (0xFFFFFFFF << 12))

@@ -175,6 +175,17 @@ metType = NTupleObjectType("met", baseObjectTypes = [ fourVectorType ], variable
     NTupleVariable("genEta", lambda x : x.genMET().eta() if x.genMET() else 0, mcOnly=True ),
 ])
 
+primaryVertexType = NTupleObjectType("primaryVertex", variables = [
+    NTupleVariable("x",    lambda x : x.x()),
+    NTupleVariable("y",   lambda x : x.y()),
+    NTupleVariable("z",   lambda x : x.z()),
+    NTupleVariable("isFake",   lambda x : x.isFake()),
+    NTupleVariable("ndof",   lambda x : x.ndof()),
+    NTupleVariable("Rho",   lambda x : x.position().Rho()),
+    NTupleVariable("score",  lambda x : x.score),
+])
+
+
 ##------------------------------------------  
 ## GENPARTICLE
 ##------------------------------------------  
@@ -195,4 +206,19 @@ genParticleWithAncestryType = NTupleObjectType("genParticleWithAncestry", baseOb
 genParticleWithLinksType = NTupleObjectType("genParticleWithLinks", baseObjectTypes = [ genParticleWithAncestryType ], mcOnly=True, variables = [
     NTupleVariable("motherIndex", lambda x : x.motherIndex, int, help="index of the mother in the generatorSummary")
 ])
+
+genJetType = NTupleObjectType("genJet", baseObjectTypes = [ genParticleType ], variables = [
+    NTupleVariable("numBHadrons", lambda x : getattr(x,"numBHadronsBeforeTop",-1), int, mcOnly=True, help="number of matched b hadrons before top quark decay"),
+    NTupleVariable("numCHadrons", lambda x : getattr(x,"numCHadronsBeforeTop",-1), int, mcOnly=True, help="number of matched c hadrons before top quark decay"),
+    NTupleVariable("numBHadronsFromTop", lambda x : getattr(x,"numBHadronsFromTop",-1), int, mcOnly=True, help="number of matched b hadrons from top quark decay"),
+    NTupleVariable("numCHadronsFromTop", lambda x : getattr(x,"numCHadronsFromTop",-1), int, mcOnly=True, help="number of matched c hadrons from top quark decay"),
+    NTupleVariable("numBHadronsAfterTop", lambda x : getattr(x,"numBHadronsAfterTop",-1), int, mcOnly=True, help="number of matched b hadrons after top quark decay"),
+    NTupleVariable("numCHadronsAfterTop", lambda x : getattr(x,"numCHadronsAfterTop",-1), int, mcOnly=True, help="number of matched c hadrons after top quark decay"),
+    NTupleVariable("wNuPt", lambda x : (x.p4()+x.nu).pt() if hasattr(x,"nu") else x.p4().pt() ,float, mcOnly=True, help="pt of jet adding back the neutrinos"),
+    NTupleVariable("wNuEta", lambda x : (x.p4()+x.nu).eta() if hasattr(x,"nu") else x.p4().eta() ,float, mcOnly=True, help="eta of jet adding back the neutrinos"),
+    NTupleVariable("wNuPhi", lambda x : (x.p4()+x.nu).phi() if hasattr(x,"nu") else x.p4().phi() ,float, mcOnly=True, help="phi of jet adding back the neutrinos"),
+    NTupleVariable("wNuM", lambda x : (x.p4()+x.nu).M() if hasattr(x,"nu") else x.p4().M() ,float, mcOnly=True, help="mass of jet adding back the neutrinos"),
+
+])
+
 

@@ -15,13 +15,32 @@ treeProducer= cfg.Analyzer(
         #here the list of simple event variables (floats, int) can be specified
         globalVariables = [
              NTupleVariable("rho",  lambda ev: ev.rho, float, help="jets rho"),
+             NTupleVariable("rhoN",  lambda ev: ev.rhoN, float, help="rho with neutrals only"),
+             NTupleVariable("nPU0", lambda ev : [bx.nPU() for bx in  ev.pileUpInfo if bx.getBunchCrossing()==0][0], help="nPU in BX=0",mcOnly=True),
+             NTupleVariable("nPVs", lambda ev : len(ev.goodVertices), help="total number of good PVs"),
+             NTupleVariable("bx",  lambda ev: ev.input.eventAuxiliary().bunchCrossing(), int, help="bunch crossing number"),
+             NTupleVariable("met_sig",  lambda ev : ev.met.significance(), help="met significance from MET::significance() method"),
+             NTupleVariable("met_covXX",  lambda ev : ev.met.getSignificanceMatrix().At(0,0), help="xx element of met covariance matrix"),
+             NTupleVariable("met_covXY",  lambda ev : ev.met.getSignificanceMatrix().At(0,1), help="xy element of met covariance matrix"),
+             NTupleVariable("met_covYY",  lambda ev : ev.met.getSignificanceMatrix().At(1,1), help="yy element of met covariance matrix"),
+             NTupleVariable("met_rawpt",  lambda ev : ev.met.uncorPt(), help="raw met"),
+             NTupleVariable("lhe_Nj",  lambda ev: ev.lheNj, float,mcOnly=True, help="number of jets at LHE level"),
+             NTupleVariable("lhe_Nb",  lambda ev: ev.lheNb, float,mcOnly=True, help="number of b-jets at LHE level"),
+             NTupleVariable("lhe_Nc",  lambda ev: ev.lheNc, float,mcOnly=True, help="number of c-jets at LHE level"),
+             NTupleVariable("lhe_Ng",  lambda ev: ev.lheNg, float,mcOnly=True, help="number of gluon jets at LHE level"),
+             NTupleVariable("lhe_Nl",  lambda ev: ev.lheNl, float,mcOnly=True, help="number of light(uds) jets at LHE level"),
+             NTupleVariable("lhe_Vpt",  lambda ev: ev.lheV_pt, float,mcOnly=True, help="Vector pT at LHE level"),
+             NTupleVariable("lhe_HT",  lambda ev: ev.lheHT, float,mcOnly=True, help="HT at LHE level"),
+
+
         ],
         #here one can specify compound objects 
         globalObjects = {
           "met"    : NTupleObject("met",     metType, help="PF E_{T}^{miss}, after default type 1 corrections"),
+
         },
 	collections = {
-		#The following would just store the electrons and muons from miniaod without any selection or cleaning
+ 		#The following would just store the electrons and muons from miniaod without any selection or cleaning
                 # only the basice particle information is saved
 		#"slimmedMuons" : ( AutoHandle( ("slimmedMuons",), "std::vector<pat::Muon>" ),
                 #           NTupleCollection("mu", particleType, 4, help="patMuons, directly from MINIAOD") ),
@@ -33,13 +52,18 @@ treeProducer= cfg.Analyzer(
                 "selectedTaus"    : NTupleCollection("Tau", tauType, 10, help="Taus after the preselection"),
                 "selectedPhotons"    : NTupleCollection("Photon", photonType, 10, help="Taus after the preselection"),
 	        "cleanJetsAll"       : NTupleCollection("Jet",     nanoJetType, 20, help="Cental jets after full selection and cleaning, sorted by b-tag"),
+                "goodVertices"    : NTupleCollection("primaryVertices", primaryVertexType, 4, help="first four PVs"),
+
 		#dump of gen objects
+                "genJets"    : NTupleCollection("GenJet",   genJetType, 15, help="Generated jets with hadron matching, sorted by pt descending",filter=lambda x: x.pt() > 20,mcOnly=True),
                 "gentopquarks"    : NTupleCollection("GenTop",     genParticleType, 10, help="Generated top quarks from hard scattering"),
                 "genbquarks"      : NTupleCollection("GenBQuark",  genParticleType, 10, help="Generated bottom quarks from top quark decays"),
                 "genwzquarks"     : NTupleCollection("GenQuark",   genParticleType, 20, help="Generated quarks from W/Z decays"),
                 "genleps"         : NTupleCollection("GenLep",     genParticleType, 20, help="Generated leptons from W/Z decays"),
                 "gentauleps"      : NTupleCollection("GenLepFromTau", genParticleType, 10, help="Generated leptons from decays of taus from W/Z/h decays"),
-
+                "gennus"         : NTupleCollection("GenNu",     genParticleWithAncestryType, 6, help="Generated neutrino from W/Z decays",mcOnly=True),
+                "gentaus"         : NTupleCollection("GenTaus",     genParticleWithAncestryType, 6, help="Generated taus",mcOnly=True),
+               
 	}
 	)
 
@@ -79,7 +103,7 @@ TrigAna= cfg.Analyzer(
     #grouping several paths into a single flag
     # v* can be used to ignore the version of a path
     triggerBits={
-    'ELE':["HLT_Ele23_Ele12_CaloId_TrackId_Iso_v*","HLT_Ele32_eta2p1_WP85_Gsf_v*","HLT_Ele32_eta2p1_WP85_Gsf_v*"],
+    'ELE':["HLT_Ele*","HLT_Ele32_eta2p1_WP85_Gsf_v*","HLT_Ele32_eta2p1_WP85_Gsf_v*"],
     'MU': ["HLT_Mu17_TrkIsoVVL_TkMu8_TrkIsoVVL_v*","HLT_Mu17_TrkIsoVVL_Mu8_TrkIsoVVL_v*","HLT_IsoTkMu24_eta2p1_IterTrk02_v*","HLT_IsoTkMu24_IterTrk02_v*"],
     },
 #   processName='HLT',
@@ -94,7 +118,13 @@ TrigAna= cfg.Analyzer(
 #replace some parameters
 LepAna.loose_muon_pt = 10
 
-sequence = [LHEAna,FlagsAna, GenAna, PUAna,TrigAna,VertexAna,LepAna,TauAna,PhoAna,JetAna,METAna,treeProducer]
+from NanoAnalyzer import *
+Nano = cfg.Analyzer(
+    verbose = False,
+    class_object = NanoAnalyzer
+)
+
+sequence = [LHEAna,FlagsAna, GenAna, PUAna,TrigAna,VertexAna,LepAna,TauAna,PhoAna,JetAna,METAna,Nano,treeProducer]
 
 #use tfile service to provide a single TFile to all modules where they
 #can write any root object. If the name is 'outputfile' or the one specified in treeProducer
@@ -129,6 +159,6 @@ config = cfg.Config( components = selectedComponents,
 # and the following runs the process directly if running as with python filename.py  
 if __name__ == '__main__':
     from PhysicsTools.HeppyCore.framework.looper import Looper 
-    looper = Looper( 'Loop', config, nPrint = 5,nEvents=5000) 
+    looper = Looper( 'Loop', config, nPrint = 5,nEvents=35000) 
     looper.loop()
     looper.write()
