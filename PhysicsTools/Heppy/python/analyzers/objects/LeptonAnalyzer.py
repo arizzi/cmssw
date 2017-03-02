@@ -642,7 +642,7 @@ setattr(LeptonAnalyzer,"defaultConfig",cfg.Analyzer(
     # loose_muon_isoCut = lambda muon :muon.miniRelIso < 0.2 
     # inclusive very loose electron selection
     inclusive_electron_id  = "",
-    inclusive_electron_pt  = 5,
+    inclusive_electron_pt  = 3,
     inclusive_electron_eta = 2.5,
     inclusive_electron_dxy = 0.5,
     inclusive_electron_dz  = 1.0,

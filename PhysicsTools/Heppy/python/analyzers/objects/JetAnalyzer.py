@@ -294,9 +294,9 @@ class JetAnalyzer( Analyzer ):
         ## Associate jets to leptons
         incleptons = event.inclusiveLeptons if hasattr(event, 'inclusiveLeptons') else event.selectedLeptons
         jlpairs = matchObjectCollection(incleptons, allJets, self.jetLepDR**2)
-
         for jet in allJets:
             jet.leptons = [l for l in jlpairs if jlpairs[l] == jet ]
+            jet.leptonIdx = [incleptons.index(l) for l in jlpairs if jlpairs[l] == jet ]
         for lep in incleptons:
             jet = jlpairs[lep]
             if jet is None:

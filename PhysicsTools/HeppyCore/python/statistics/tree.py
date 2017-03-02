@@ -1,7 +1,7 @@
 import numpy
 from ROOT import TTree
 import ROOT
-
+import struct
 class Tree(object):
     
     def __init__(self, name, title, defaultFloatType="D", defaultIntType="I"):
@@ -34,6 +34,7 @@ class Tree(object):
            Users should call "var" and "vector", not this function directly."""
         if storageType == "default": 
             storageType = self.defaultIntType if type is int else self.defaultFloatType
+        self.storageType=storageType
         if type is float  :
             if storageType == "F": 
                 selfmap[varName]=numpy.zeros(len,numpy.float32)
@@ -114,6 +115,12 @@ class Tree(object):
                     value.ExpandCreateFast(0)
             
     def fill(self, varName, value ):
+#        value
+        if(self.storageType=='F' or self.storageType=='D' ):
+          f=float(value)
+          i=((struct.unpack('<I', struct.pack('<f', f))[0]  ) & (0xFFFFFFFF << 12))
+          f=struct.unpack('<f', struct.pack('<I', i))[0]
+          value=f
         if isinstance(self.vars[varName], numpy.ndarray):
             self.vars[varName][0]=value
         else:
@@ -123,6 +130,12 @@ class Tree(object):
         a = self.vecvars[varName]
         if isinstance(a, numpy.ndarray):
             for (i,v) in enumerate(values):
+                if type(v) != int : 
+                  f=float(v)
+                  ii=((struct.unpack('<I', struct.pack('<f', f))[0]  ) & (0xFFFFFFFF << 12))
+                  f=struct.unpack('<f', struct.pack('<I', ii))[0]
+                  v=f
+
                 a[i]=v
         else:
             if isinstance(a, ROOT.TObject) and a.ClassName() == "TClonesArray":
