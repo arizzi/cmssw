@@ -6,6 +6,7 @@
 #include <iostream>
 uint16_t CompressionElement::pack(float value, float ref) const
 {
+    std::cout << "Pack " << value  << " " << ref << std::endl;
     float toCompress=0;
     switch(target) {
         case(realValue):
@@ -18,9 +19,10 @@ uint16_t CompressionElement::pack(float value, float ref) const
           toCompress=value-ref;
           break;
     }
+    std::cout << toCompress << " " << params.size()<< std::endl;
     switch(method) {
         case(float16):
-          return MiniFloatConverter::float32to16(toCompress);
+          return MiniFloatConverter::float32to16(toCompress*params[0]);
           break;
         case(reduceMantissa):
           return MiniFloatConverter::reduceMantissaToNbits(toCompress,params[0]);
@@ -48,7 +50,7 @@ float CompressionElement::unpack(uint16_t packed, float ref) const
     float unpacked=0;
     switch(method) {
         case(float16):
-          unpacked= MiniFloatConverter::float16to32(packed);
+          unpacked= MiniFloatConverter::float16to32(packed)/params[0];
           break;
         case(reduceMantissa):
           unpacked=packed;
@@ -103,9 +105,25 @@ void CovarianceParameterization::load(int version)
      schema1(3,4)=schema1(3,3);
      schema1(2,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,{-3,4,4});
      schema1(1,4)=schema1(2,3);
-     
+     schema1(0,0)=CompressionElement(CompressionElement::one,CompressionElement::ratioToRef,{});
+     schema1(1,1)=schema0(0,0);
+     schema1(2,2)=schema0(0,0);
+
      schemas.push_back(schema0); 
      schemas.push_back(schema1);
+
+     CompressionSchema schemaMiniAOD;
+     schemaMiniAOD(0,0)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,{-5,5,256});
+     schemaMiniAOD(1,1)=schemaMiniAOD(0,0);
+     schemaMiniAOD(2,2)=schemaMiniAOD(0,0);
+     schemaMiniAOD(3,3)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,{10000});
+     schemaMiniAOD(4,4)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,{10000});
+     schemaMiniAOD(3,4)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,{10000}); 
+     schemaMiniAOD(2,3)=schemaMiniAOD(0,0);
+     schemaMiniAOD(1,4)=schemaMiniAOD(0,0);
+
+     schemas.push_back(schemaMiniAOD); 
+
 
     loadedVersion_=version; 
      std::cerr << "Loaded version " << loadedVersion_ << " " << version << " " << loadedVersion() << std::endl;
@@ -120,8 +138,8 @@ void CovarianceParameterization::readFile( TFile & f) {
     for (int i = 0; i < 5; i++) {
         for (int j = i; j < 5; j++) {
 
-            std::string String_first_positive = "_pixel_positive";
-            std::string String_second_positive = "_inner_positive";
+            std::string String_first_positive = "_pixel_";
+            std::string String_second_positive = "_inner_";
 
             addTheHistogram(&cov_elements_pixelHit, String_first_positive, i, j,f);
             addTheHistogram(&cov_elements_noPixelHit, String_second_positive, i, j,f);
@@ -137,9 +155,15 @@ void CovarianceParameterization::addTheHistogram(std::vector<TH3D *> * HistoVect
 
     std::string  List_covName[5] = {"qoverp", "lambda", "phi", "dxy", "dsz"};
 
-    std::string histoNameString = "histo_" + List_covName[i] + "_" + List_covName[j] + StringToAddInTheName;// + "_entries";
+    std::string histoNameString = "histo_" + List_covName[i] + "_" + List_covName[j] + StringToAddInTheName+"positive" ;// + "_entries";
+    std::string histoNameString1 = "histo_" + List_covName[i] + "_" + List_covName[j] + StringToAddInTheName+"negative" ;// + "_entries";
     TH3D * matrixElememtHistogramm = (TH3D*) fileToRead.Get(histoNameString.c_str());
-    HistoVector->push_back(matrixElememtHistogramm);
+    TH3D * matrixElememtHistogramm1 = (TH3D*) fileToRead.Get(histoNameString1.c_str());
+    if(matrixElememtHistogramm->GetEntries() > matrixElememtHistogramm1->GetEntries()){
+        HistoVector->push_back(matrixElememtHistogramm);
+    } else {
+        HistoVector->push_back(matrixElememtHistogramm1);
+    }
     std::cout << "un istogrammma:\t" << matrixElememtHistogramm << " \t\t"+histoNameString << "      \t\tle entrate sono:\t" << matrixElememtHistogramm->GetEntries() << std::endl;
 }
 
