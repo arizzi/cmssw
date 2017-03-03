@@ -1,5 +1,5 @@
 #include "RecoVertex/AdaptiveVertexFinder/interface/TracksClusteringFromDisplacedSeed.h"
-//#define VTXDEBUG 1
+#define VTXDEBUG 1
 
 
 TracksClusteringFromDisplacedSeed::TracksClusteringFromDisplacedSeed(const edm::ParameterSet &params) :
@@ -45,7 +45,7 @@ std::pair<std::vector<reco::TransientTrack>,GlobalPoint> TracksClusteringFromDis
                  float distance = dist.distance();
 		 GlobalVector trackDir2D(tt->impactPointState().globalDirection().x(),tt->impactPointState().globalDirection().y(),0.); 
 		 GlobalVector seedDir2D(seed.impactPointState().globalDirection().x(),seed.impactPointState().globalDirection().y(),0.); 
-		 //SK:UNUSED//    float dotprodTrackSeed2D = trackDir2D.unit().dot(seedDir2D.unit());
+		 float dotprodTrackSeed2D = trackDir2D.unit().dot(seedDir2D.unit());
 
                  float dotprodTrack = (dist.points().first-pv).unit().dot(tt->impactPointState().globalDirection().unit());
                  float dotprodSeed = (dist.points().second-pv).unit().dot(seed.impactPointState().globalDirection().unit());
@@ -60,7 +60,7 @@ std::pair<std::vector<reco::TransientTrack>,GlobalPoint> TracksClusteringFromDis
                     distance < clusterMaxDistance);  // absolute distance cut
 
 #ifdef VTXDEBUG
-            	    std::cout << tt->trackBaseRef().key() << " :  " << (selected?"+":" ")<< " " << m.significance() << " < " << clusterMaxSignificance <<  " &&  " << 
+            	    std::cout <<  " :  " << (selected?"+":" ")<< " " << m.significance() << " < " << clusterMaxSignificance <<  " &&  " << 
                     dotprodSeed  << " > " <<  clusterMinAngleCosine << "  && " << 
                     dotprodTrack  << " > " <<  clusterMinAngleCosine << "  && " << 
                     dotprodTrackSeed2D  << " > " <<  clusterMinAngleCosine << "  &&  "  << 
@@ -96,7 +96,7 @@ std::vector<TracksClusteringFromDisplacedSeed::Cluster> TracksClusteringFromDisp
                 if(ip.first && ip.second.value() >= min3DIPValue && ip.second.significance() >= min3DIPSignificance && ip.second.value() <= max3DIPValue && ip.second.significance() <= max3DIPSignificance)
                   { 
 #ifdef VTXDEBUG
-                    std::cout << "new seed " <<  it-selectedTracks.begin() << " ref " << it->trackBaseRef().key()  << " " << ip.second.value() << " " << ip.second.significance() << " " << it->track().hitPattern().trackerLayersWithMeasurement() << " " << it->track().pt() << " " << it->track().eta() << std::endl;
+                    std::cout << "new seed " <<  it-selectedTracks.begin() << " ref " << ip.second.value() << " " << ip.second.significance() << " " << it->track().hitPattern().trackerLayersWithMeasurement() << " " << it->track().pt() << " " << it->track().eta() << std::endl;
 #endif
                     seeds.push_back(*it);  
                   }

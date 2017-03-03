@@ -106,8 +106,8 @@ void CovarianceParameterization::load(int version)
      schema1(2,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,{-3,4,4});
      schema1(1,4)=schema1(2,3);
      schema1(0,0)=CompressionElement(CompressionElement::one,CompressionElement::ratioToRef,{});
-     schema1(1,1)=schema0(0,0);
-     schema1(2,2)=schema0(0,0);
+     schema1(1,1)=schema0(1,1);
+     schema1(2,2)=schema0(1,1);
 
      schemas.push_back(schema0); 
      schemas.push_back(schema1);
