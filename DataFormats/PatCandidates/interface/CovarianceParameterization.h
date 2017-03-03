@@ -24,8 +24,8 @@ class CovarianceParameterization {
     public:
         static int index(int i, int j) {if(i>=j) return j+i*(i+1)/2; else return i+j*(j+1)/2 ; }
         struct CompressionSchema {
-             CompressionSchema() : elements{CompressionElement()} {}
-             CompressionElement elements[15];
+             CompressionSchema() : elements(15,CompressionElement()) {}
+             std::vector<CompressionElement> elements;
              CompressionElement & operator()(int i,int j) {return elements[index(i,j)];}
              const CompressionElement & operator()(int i,int j) const {return elements[index(i,j)];}
         };
