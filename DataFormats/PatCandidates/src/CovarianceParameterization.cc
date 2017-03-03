@@ -89,8 +89,7 @@ float CompressionElement::unpack(uint16_t packed, float ref) const
 
 void CovarianceParameterization::load(int version)
 {
- edm::FileInPath fip("/scratch/mandorli/CMSSW_8_0_21/src/plot/parametrizzazioni_pixel_noPixel_mantissaVariabile/ROOT/FinalFileWithParametrization.root");
-//  edm::FileInPath fip((boost::format("DataFormats/PatCandidates/data/CovarianceParameterization_version%d.root") % version).str());
+ edm::FileInPath fip((boost::format("DataFormats/PatCandidates/data/CovarianceParameterization_version%d.root") % version).str());
  std::cerr << "Hello there, I'm going to load " <<  fip.fullPath().c_str() << std::endl;
  TFile fileToRead(fip.fullPath().c_str()); 
 //Read files from here fip.fullPath().c_str();
@@ -108,16 +107,6 @@ void CovarianceParameterization::load(int version)
 //      schema0(2,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,32,{-1,1.5});
 //      schema0(1,4)=schema0(2,3);
      
-     CompressionSchema schema1;
-     schema1(3,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,16,{-3,4});
-     schema1(4,4)=schema1(3,3);
-     schema1(3,4)=schema1(3,3);
-     schema1(2,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,4,{-3,4});
-     schema1(1,4)=schema1(2,3);
-     schema1(0,0)=CompressionElement(CompressionElement::one,CompressionElement::ratioToRef,{});
-     schema1(1,1)=schema1(0,0);
-     schema1(2,2)=schema1(0,0);
-
      
 
 // { (*((TVector)fileToRead.Get("schemas/1/00/param"))) [0], (*((TVector)fileToRead.Get("schemas/1/00/param"))) [1] }
@@ -132,38 +121,54 @@ void CovarianceParameterization::load(int version)
      for (int folderNumber = 0; folderNumber < 6 ; folderNumber++) {
         CompressionSchema schema; 
          
-        std::string folder = "schemas/";
-        folder = folder + ListOfFolderName[folderNumber] + "/";
         
         for (int i = 0; i < 5; i++) {
             for (int j = i; j < 5; j++) {        //FILLING ONLY THE SCHEMA OF SOME ELEMENTS
-                folder = folder + s[i] + s[j];
+                std::string folder = "schemas/" + ListOfFolderName[folderNumber] + "/"  + s[i] + s[j];
+                std::cout << "folder : " << folder << std::endl;
+                std::cout << fileToRead.Get(folder.c_str()) << std::endl;
+                fileToRead.Get(folder.c_str())->ls();
                 std::string methodString = folder + "/method";
                 std::string targetString = folder + "/target";
                 std::string bitString = folder + "/bit";
+                std::vector<float> vParams ;
+                TVector *p=(TVector*) fileToRead.Get((folder+"/param").c_str());
+                std::cout << p << std::endl;
+                for(int k = 0 ; k < p->GetNoElements() ; k++){
+                    vParams.push_back((*p)[k]);
+                }
 
-                schema(i,j)=CompressionElement((CompressionElement::Method) ((TParameter<int>*) fileToRead.Get(methodString.c_str()))->GetVal(),(CompressionElement::Target) ((TParameter<int>*) fileToRead.Get(targetString.c_str()))->GetVal(), (int) ((TParameter<int>*) fileToRead.Get(bitString.c_str()))->GetVal(), {-2,1});
+                std::cout << "here" << std::endl;
+                schema(i,j)=CompressionElement((CompressionElement::Method) ((TParameter<int>*) fileToRead.Get(methodString.c_str()))->GetVal(),(CompressionElement::Target) ((TParameter<int>*) fileToRead.Get(targetString.c_str()))->GetVal(), (int) ((TParameter<int>*) fileToRead.Get(bitString.c_str()))->GetVal(), vParams);
         
                 
             }
         }
-        
+     std::cout << "adding schema " << schemas.size() << std::endl;    
      schemas.push_back(schema); 
      }
 //      schemas.push_back(schema0); 
-
-    schemas.push_back(schema1);
-     
-     
     fileToRead.Close();
+     CompressionSchema schema1;
+     schema1(3,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,16,{-3,4});
+     schema1(4,4)=schema1(3,3);
+     schema1(3,4)=schema1(3,3);
+     schema1(2,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,4,{-3,4});
+     schema1(1,4)=schema1(2,3);
+     schema1(0,0)=CompressionElement(CompressionElement::one,CompressionElement::ratioToRef,0,{});
+     schema1(1,1)=schema1(0,0);
+     schema1(2,2)=schema1(0,0);
+    schemas.push_back(schema1); //schema 7
+     
+     
 
      CompressionSchema schemaMiniAOD;
-     schemaMiniAOD(0,0)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,{-5,5,256});
+     schemaMiniAOD(0,0)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,256,{-5,5});
      schemaMiniAOD(1,1)=schemaMiniAOD(0,0);
      schemaMiniAOD(2,2)=schemaMiniAOD(0,0);
-     schemaMiniAOD(3,3)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,{10000});
-     schemaMiniAOD(4,4)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,{10000});
-     schemaMiniAOD(3,4)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,{10000}); 
+     schemaMiniAOD(3,3)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,16,{10000});
+     schemaMiniAOD(4,4)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,16,{10000});
+     schemaMiniAOD(3,4)=CompressionElement(CompressionElement::float16,CompressionElement::realValue,16,{10000}); 
      schemaMiniAOD(2,3)=schemaMiniAOD(0,0);
      schemaMiniAOD(1,4)=schemaMiniAOD(0,0);
 
@@ -184,7 +189,7 @@ void CovarianceParameterization::readFile( TFile & f) {
         for (int j = i; j < 5; j++) {
 
             std::string String_first_positive = "_pixel_";
-            std::string String_second_positive = "_inner_";
+            std::string String_second_positive = "_noPixel_";
 
             addTheHistogram(&cov_elements_pixelHit, String_first_positive, i, j,f);
             addTheHistogram(&cov_elements_noPixelHit, String_second_positive, i, j,f);
@@ -200,15 +205,10 @@ void CovarianceParameterization::addTheHistogram(std::vector<TH3D *> * HistoVect
 
     std::string  List_covName[5] = {"qoverp", "lambda", "phi", "dxy", "dsz"};
 
-    std::string histoNameString = "histo_" + List_covName[i] + "_" + List_covName[j] + StringToAddInTheName+"positive" ;// + "_entries";
-    std::string histoNameString1 = "histo_" + List_covName[i] + "_" + List_covName[j] + StringToAddInTheName+"negative" ;// + "_entries";
+    std::string histoNameString = "covariance_" + List_covName[i] + "_" + List_covName[j] + StringToAddInTheName+"parametrization" ;// + "_entries";
     TH3D * matrixElememtHistogramm = (TH3D*) fileToRead.Get(histoNameString.c_str());
-    TH3D * matrixElememtHistogramm1 = (TH3D*) fileToRead.Get(histoNameString1.c_str());
-    if(matrixElememtHistogramm->GetEntries() > matrixElememtHistogramm1->GetEntries()){
-        HistoVector->push_back(matrixElememtHistogramm);
-    } else {
-        HistoVector->push_back(matrixElememtHistogramm1);
-    }
+    std::cout << matrixElememtHistogramm << " " << histoNameString << std::endl;
+    HistoVector->push_back(matrixElememtHistogramm);
     std::cout << "un istogrammma:\t" << matrixElememtHistogramm << " \t\t"+histoNameString << "      \t\tle entrate sono:\t" << matrixElememtHistogramm->GetEntries() << std::endl;
 }
 
@@ -253,7 +253,7 @@ float CovarianceParameterization::meanValue(int i,int j,int sign,float pt, float
 float CovarianceParameterization::pack(float value, int schema, int i,int j,float pt, float eta, int nHits,int pixelHits,  float cii,float cjj) const {
     if(i>j) std::swap(i,j);
     float ref=meanValue(i,j,1.,pt,eta,nHits,pixelHits,cii,cjj);
-    std::cout << "pack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << value << " r: " << ref << " " << schemas[schema](i,j).pack(value,ref)<< std::endl;
+    std::cout << "pack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << value << " r: " << ref << " " << schemas[schema](i,j).pack(value,ref)<< " " << schema << std::endl;
     return schemas[schema](i,j).pack(value,ref);
 }
 float CovarianceParameterization::unpack(uint16_t packed, int schema, int i,int j,float pt, float eta, int nHits,int pixelHits,  float cii,float cjj) const {

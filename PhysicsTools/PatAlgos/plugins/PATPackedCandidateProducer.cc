@@ -237,12 +237,12 @@ void pat::PATPackedCandidateProducer::produce(edm::StreamID, edm::Event& iEvent,
           // properties of the best track 
           outPtrP->back().setLostInnerHits( lostHits );
           if(outPtrP->back().pt() > minPtForTrackProperties_ || whiteList.find(ic)!=whiteList.end()) {
-            if(abs(outPtrP->back().pdgId())==22 || ctrack->hitPattern().pixelLayersWithMeasurement()==0 ) { outPtrP->back().setTrackProperties(*ctrack,2);} else {
-            outPtrP->back().setTrackProperties(*ctrack,0); //high quality
+            if(abs(outPtrP->back().pdgId())==22) {outPtrP->back().setTrackProperties(*ctrack,0);}
+            else { outPtrP->back().setTrackProperties(*ctrack,3); //high quality 
             }
             //outPtrP->back().setTrackProperties(*ctrack,tsos.curvilinearError());
           } else {
-            if(outPtrP->back().pt() > 0.5)   outPtrP->back().setTrackProperties(*ctrack,1); //low quality
+            if(outPtrP->back().pt() > 0.5)   outPtrP->back().setTrackProperties(*ctrack,6); //low quality
           }
 
           // these things are always for the CKF track
