@@ -3,7 +3,8 @@
 #include <TFile.h>
 #include <TH3D.h>
 #include <iostream>
-
+#include <map>
+#include <TKey.h>
 class CompressionElement {
     public:
       enum Method {float16=0,reduceMantissa=1,logPack=2,tanLogPack=3,zero=4,one=5};
@@ -44,7 +45,7 @@ class CovarianceParameterization {
         void readFile( TFile &);
         void  addTheHistogram(std::vector<TH3D *> * HistoVector, std::string StringToAddInTheName, int i, int j, TFile & fileToRead);
         int loadedVersion_;
-        std::vector<CompressionSchema> schemas; 
+        std::map<uint16_t,CompressionSchema> schemas; 
         std::vector<TH3D *>  cov_elements_pixelHit;
         std::vector<TH3D *>  cov_elements_noPixelHit;
 };

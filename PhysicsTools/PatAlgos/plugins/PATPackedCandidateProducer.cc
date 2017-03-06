@@ -83,6 +83,8 @@ namespace pat {
             std::vector< edm::EDGetTokenT<edm::View<reco::CompositePtrCandidate> > > SVWhiteLists_;
 
             const double minPtForTrackProperties_;
+            /// 0: high pt, w/pix; 1: higpt w/o pix; 2: lowpt w/pix, 3: low/pt nopix, 4:electrons
+            const std::vector<int> covariancePackingSchemas_;
             // for debugging
             float calcDxy(float dx, float dy, float phi) const {
                 return - dx * std::sin(phi) + dy * std::cos(phi);
@@ -105,7 +107,9 @@ pat::PATPackedCandidateProducer::PATPackedCandidateProducer(const edm::Parameter
   PuppiCandsMap_(consumes<edm::ValueMap<reco::CandidatePtr> >(iConfig.getParameter<edm::InputTag>("PuppiSrc"))),
   PuppiCands_(consumes<std::vector< reco::PFCandidate > >(iConfig.getParameter<edm::InputTag>("PuppiSrc"))),
   PuppiCandsNoLep_(consumes<std::vector< reco::PFCandidate > >(iConfig.getParameter<edm::InputTag>("PuppiNoLepSrc"))),
-  minPtForTrackProperties_(iConfig.getParameter<double>("minPtForTrackProperties"))
+  minPtForTrackProperties_(iConfig.getParameter<double>("minPtForTrackProperties")),
+  covariancePackingSchemas_(iConfig.getParameter<std::vector<int> >("covariancePackingSchemas"))
+
 {
   std::vector<edm::InputTag> sv_tags = iConfig.getParameter<std::vector<edm::InputTag> >("secondaryVerticesForWhiteList");
   for(auto itag : sv_tags){
@@ -237,12 +241,18 @@ void pat::PATPackedCandidateProducer::produce(edm::StreamID, edm::Event& iEvent,
           // properties of the best track 
           outPtrP->back().setLostInnerHits( lostHits );
           if(outPtrP->back().pt() > minPtForTrackProperties_ || whiteList.find(ic)!=whiteList.end()) {
-            if(abs(outPtrP->back().pdgId())==22) {outPtrP->back().setTrackProperties(*ctrack,0);}
-            else { outPtrP->back().setTrackProperties(*ctrack,3); //high quality 
-            }
+            if(abs(outPtrP->back().pdgId())==22) {outPtrP->back().setTrackProperties(*ctrack,covariancePackingSchemas_[4]);}
+            else { 
+                if( ctrack->hitPattern().numberOfValidPixelHits() >0) { outPtrP->back().setTrackProperties(*ctrack,covariancePackingSchemas_[0]);} //high quality 
+                  else {  outPtrP->back().setTrackProperties(*ctrack,covariancePackingSchemas_[1]);} 
+             }
+            
             //outPtrP->back().setTrackProperties(*ctrack,tsos.curvilinearError());
           } else {
-            if(outPtrP->back().pt() > 0.5)   outPtrP->back().setTrackProperties(*ctrack,6); //low quality
+            if(outPtrP->back().pt() > 0.5 ){ 
+                if(ctrack->hitPattern().numberOfValidPixelHits() >0)  outPtrP->back().setTrackProperties(*ctrack,covariancePackingSchemas_[2]); //low quality, with pixels
+                  else       outPtrP->back().setTrackProperties(*ctrack,covariancePackingSchemas_[3]); //low quality, without pixels
+            }
           }
 
           // these things are always for the CKF track

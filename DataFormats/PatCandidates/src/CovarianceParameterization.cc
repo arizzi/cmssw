@@ -114,17 +114,23 @@ void CovarianceParameterization::load(int version)
      
 //      TFolder * fold =(TFolder *) _file0->Get("schemas")
 //      GetListOfFolders()
-     
-     std::string ListOfFolderName [10] = {"0","1","2","3","4","5","6","7","8","9"} ;
-     std::string s [10] = {"0","1","2","3","4"} ;
 
-     for (int folderNumber = 0; folderNumber < 6 ; folderNumber++) {
-        CompressionSchema schema; 
-         
-        
-        for (int i = 0; i < 5; i++) {
+     std::cout << fileToRead.Get("schemas") << std::endl;     
+     TIter next(((TDirectoryFile*)fileToRead.Get("schemas"))->GetListOfKeys());
+     TKey *key;
+     while ((key = (TKey*)next())) {
+      std::cout << "nel loop" << std::endl;
+      TClass *cl = gROOT->GetClass(key->GetClassName());
+      if (!cl->InheritsFrom("TDirectoryFile")) continue;
+      std::cout << "IF" << std::endl;
+      std::string schemaNumber = key->ReadObj()->GetName();
+      uint16_t schemaN = std::stoi(schemaNumber);
+      std::cout << "Schema " << schemaNumber << " " << schemaN << std::endl;
+     //for (int folderNumber = 0; folderNumber < 6 ; folderNumber++) {
+      CompressionSchema schema; 
+      for (int i = 0; i < 5; i++) {
             for (int j = i; j < 5; j++) {        //FILLING ONLY THE SCHEMA OF SOME ELEMENTS
-                std::string folder = "schemas/" + ListOfFolderName[folderNumber] + "/"  + s[i] + s[j];
+                  std::string folder = "schemas/" + schemaNumber + "/"  + char(48+i) + char(48+j);
                 std::cout << "folder : " << folder << std::endl;
                 std::cout << fileToRead.Get(folder.c_str()) << std::endl;
                 fileToRead.Get(folder.c_str())->ls();
@@ -145,10 +151,10 @@ void CovarianceParameterization::load(int version)
             }
         }
      std::cout << "adding schema " << schemas.size() << std::endl;    
-     schemas.push_back(schema); 
+     schemas[schemaN]=schema; 
      }
 //      schemas.push_back(schema0); 
-    fileToRead.Close();
+/*    fileToRead.Close();
      CompressionSchema schema1;
      schema1(3,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,16,{-3,4});
      schema1(4,4)=schema1(3,3);
@@ -173,7 +179,7 @@ void CovarianceParameterization::load(int version)
      schemaMiniAOD(1,4)=schemaMiniAOD(0,0);
 
      schemas.push_back(schemaMiniAOD); 
-
+*/
 
     loadedVersion_=version; 
      std::cerr << "Loaded version " << loadedVersion_ << " " << version << " " << loadedVersion() << std::endl;
@@ -253,13 +259,17 @@ float CovarianceParameterization::meanValue(int i,int j,int sign,float pt, float
 float CovarianceParameterization::pack(float value, int schema, int i,int j,float pt, float eta, int nHits,int pixelHits,  float cii,float cjj) const {
     if(i>j) std::swap(i,j);
     float ref=meanValue(i,j,1.,pt,eta,nHits,pixelHits,cii,cjj);
-    std::cout << "pack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << value << " r: " << ref << " " << schemas[schema](i,j).pack(value,ref)<< " " << schema << std::endl;
-    return schemas[schema](i,j).pack(value,ref);
+    if(ref==0) {
+      std::cout << "override to schema zero" << std::endl;
+      schema=0;
+    }
+    std::cout << "pack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << value << " r: " << ref << " " << (*schemas.find(schema)).second(i,j).pack(value,ref)<< " " << schema << std::endl;
+    return (*schemas.find(schema)).second(i,j).pack(value,ref);
 }
 float CovarianceParameterization::unpack(uint16_t packed, int schema, int i,int j,float pt, float eta, int nHits,int pixelHits,  float cii,float cjj) const {
     if(i>j) std::swap(i,j);
     float ref=meanValue(i,j,1.,pt,eta,nHits,pixelHits,cii,cjj);
-    std::cout<< "unPack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << schemas[schema](i,j).unpack(packed,ref) << " r: " << ref << " " << packed << std::endl;
-    return schemas[schema](i,j).unpack(packed,ref);
+    std::cout<< "unPack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << (*schemas.find(schema)).second(i,j).unpack(packed,ref) << " r: " << ref << " " << packed << std::endl;
+    return (*schemas.find(schema)).second(i,j).unpack(packed,ref);
  
 }
