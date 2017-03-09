@@ -55,6 +55,7 @@ float CompressionElement::unpack(uint16_t packed, float ref) const
     switch(method) {
         case(float16):
           unpacked= MiniFloatConverter::float16to32(packed)/params[0];
+          std::cout << "Un " << unpacked << " " << MiniFloatConverter::float16to32(packed) << " " << params[0] << std::endl;
           break;
         case(reduceMantissa):
           unpacked=packed;
@@ -153,20 +154,8 @@ void CovarianceParameterization::load(int version)
      std::cout << "adding schema " << schemas.size() << std::endl;    
      schemas[schemaN]=schema; 
      }
-//      schemas.push_back(schema0); 
-/*    fileToRead.Close();
-     CompressionSchema schema1;
-     schema1(3,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,16,{-3,4});
-     schema1(4,4)=schema1(3,3);
-     schema1(3,4)=schema1(3,3);
-     schema1(2,3)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,4,{-3,4});
-     schema1(1,4)=schema1(2,3);
-     schema1(0,0)=CompressionElement(CompressionElement::one,CompressionElement::ratioToRef,0,{});
-     schema1(1,1)=schema1(0,0);
-     schema1(2,2)=schema1(0,0);
-    schemas.push_back(schema1); //schema 7
-     
-     
+//      schemas.push_back(schema0);
+    fileToRead.Close();
 
      CompressionSchema schemaMiniAOD;
      schemaMiniAOD(0,0)=CompressionElement(CompressionElement::logPack,CompressionElement::ratioToRef,256,{-5,5});
@@ -178,8 +167,8 @@ void CovarianceParameterization::load(int version)
      schemaMiniAOD(2,3)=schemaMiniAOD(0,0);
      schemaMiniAOD(1,4)=schemaMiniAOD(0,0);
 
-     schemas.push_back(schemaMiniAOD); 
-*/
+     schemas[0]=(schemaMiniAOD); 
+
 
     loadedVersion_=version; 
      std::cerr << "Loaded version " << loadedVersion_ << " " << version << " " << loadedVersion() << std::endl;
@@ -263,13 +252,21 @@ float CovarianceParameterization::pack(float value, int schema, int i,int j,floa
       std::cout << "override to schema zero" << std::endl;
       schema=0;
     }
+    if(schema==0 && i==j && (i==2 || i==0) ) ref=1./(pt*pt);
     std::cout << "pack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << value << " r: " << ref << " " << (*schemas.find(schema)).second(i,j).pack(value,ref)<< " " << schema << std::endl;
     return (*schemas.find(schema)).second(i,j).pack(value,ref);
 }
 float CovarianceParameterization::unpack(uint16_t packed, int schema, int i,int j,float pt, float eta, int nHits,int pixelHits,  float cii,float cjj) const {
     if(i>j) std::swap(i,j);
     float ref=meanValue(i,j,1.,pt,eta,nHits,pixelHits,cii,cjj);
-    std::cout<< "unPack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << (*schemas.find(schema)).second(i,j).unpack(packed,ref) << " r: " << ref << " " << packed << std::endl;
+    if(ref==0) {
+      std::cout << "override to schema zero" << std::endl;
+      schema=0;
+    }
+    if(schema==0 && i==j && (i==2 || i==0) ) ref=1./(pt*pt);
+    std::cout<< "unPack: " << pt << " " << eta << " " << nHits << " "  << i << " , " << j << " v: " << (*schemas.find(schema)).second(i,j).unpack(packed,ref) << " r: " << ref << " " << packed << " " << schema << std::endl;
+    if(i==j && (*schemas.find(schema)).second(i,j).unpack(packed,ref)==0) return 1e-9;
+    else
     return (*schemas.find(schema)).second(i,j).unpack(packed,ref);
  
 }
