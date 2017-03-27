@@ -105,7 +105,7 @@ void CovarianceParameterization::load(int version)
       for (int i = 0; i < 5; i++) {
             for (int j = i; j < 5; j++) {        //FILLING ONLY THE SCHEMA OF SOME ELEMENTS
                   std::string folder = "schemas/" + schemaNumber + "/"  + char(48+i) + char(48+j);
-                fileToRead.Get(folder.c_str())->ls();
+//                fileToRead.Get(folder.c_str())->ls();
                 std::string methodString = folder + "/method";
                 std::string targetString = folder + "/target";
                 std::string bitString = folder + "/bit";
