@@ -317,6 +317,7 @@
     <field name="dz_" transient="true" />
     <field name="dtrkpt_" transient="true" />
     <field name="dphi_" transient="true" />
+    <field name="deta_" transient="true" />
     <field name="track_" transient="true" />
     <field name="m_" transient="true" />
     <!--- <field name="covariance_load_flag" transient="true"/> -->
