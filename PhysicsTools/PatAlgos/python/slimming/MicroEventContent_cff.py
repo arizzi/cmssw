@@ -9,6 +9,7 @@ MicroEventContent = cms.PSet(
         'keep *_slimmedTaus_*_*',
         'keep *_slimmedTausBoosted_*_*',
         'keep *_slimmedJets_*_*',
+        'keep *_slimmedCaloJets_*_*',
         'keep *_slimmedJetsAK8_*_*',
         'keep *_slimmedJetsPuppi_*_*',
         'keep *_slimmedMETs_*_*',

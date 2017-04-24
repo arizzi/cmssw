@@ -250,6 +250,12 @@ def miniAOD_customizeCommon(process):
     addBoostedTaus(process)
     #---------------------------------------------------------------------------
 
+    #add calo jets
+    addJetCollection(process, postfix   = "", labelName = 'Calo', jetSource = cms.InputTag('ak4CaloJets'),
+                    jetCorrections = ('AK4Calo',  cms.vstring(['L1FastJet', 'L2Relative', 'L3Absolute']), ''),
+                    algo= 'AK', rParam = 0.4,loadStdRecoBTag=False,getJetMCFlavour=False)
+    process.selectedPatJetsCalo.cut = cms.string("pt > 30")
+
     # Adding puppi jets
     if not hasattr(process, 'ak4PFJetsPuppi'): #MM: avoid confilct with substructure call
         process.load('RecoJets.JetProducers.ak4PFJetsPuppi_cfi')
@@ -274,7 +280,7 @@ def miniAOD_customizeCommon(process):
                     jetCorrections = ('AK4PFPuppi', ['L2Relative', 'L3Absolute'], ''),
                     algo= 'AK', rParam = 0.4, btagDiscriminators = map(lambda x: x.value() ,process.patJets.discriminatorSources)
                     )
-    
+
     process.patJetGenJetMatchPuppi.matched = 'slimmedGenJets'
     
     process.patJetsPuppi.jetChargeSource = cms.InputTag("patJetPuppiCharge")

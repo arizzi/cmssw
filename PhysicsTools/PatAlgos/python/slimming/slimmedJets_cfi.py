@@ -13,6 +13,19 @@ slimmedJets = cms.EDProducer("PATJetSlimmer",
    mixedDaughters = cms.bool(False),
    modifierConfig = cms.PSet( modifications = cms.VPSet() )
 )
+slimmedCaloJets = cms.EDProducer("PATJetSlimmer",
+   src = cms.InputTag("selectedPatJetsCalo"),
+   packedPFCandidates = cms.InputTag("packedPFCandidates"),
+   dropJetVars = cms.string("1"),
+   dropDaughters = cms.string("1"),
+   rekeyDaughters = cms.string("0"),
+   dropTrackRefs = cms.string("1"),
+   dropSpecific = cms.string("1"),
+   dropTagInfos = cms.string("1"),
+   modifyJets = cms.bool(True),
+   mixedDaughters = cms.bool(False),
+   modifierConfig = cms.PSet( modifications = cms.VPSet() )
+)
 slimmedJetsAK8 = cms.EDProducer("PATJetSlimmer",
    src = cms.InputTag("packedPatJetsAK8"),
    packedPFCandidates = cms.InputTag("packedPFCandidates"),

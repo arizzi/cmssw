@@ -27,6 +27,7 @@ slimmingTask = cms.Task(
     genParticlesTask,
     selectedPatTrigger,
     slimmedJets,
+    slimmedCaloJets,
     slimmedJetsAK8,
     slimmedGenJets,
     slimmedGenJetsAK8,
