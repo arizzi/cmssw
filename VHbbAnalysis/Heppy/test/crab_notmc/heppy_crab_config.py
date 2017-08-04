@@ -2,7 +2,7 @@ from WMCore.Configuration import Configuration
 config = Configuration()
 
 version="V25b"
-submission="_004"
+submission="_008doubleAndJet"
 
 config.section_("General")
 config.General.requestName = 'VHBB_HEPPY_'+version+submission

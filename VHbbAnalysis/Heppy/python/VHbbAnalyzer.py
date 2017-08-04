@@ -477,6 +477,7 @@ class VHbbAnalyzer( Analyzer ):
                     dRmin = dR
     def additionalRhos(self,event) :
         event.rhoN= self.handles['rhoN'].product()
+        help(event.rhoN)
         event.rhoCHPU= self.handles['rhoCHPU'].product()
         event.rhoCentral= self.handles['rhoCentral'].product()
 
@@ -586,6 +587,16 @@ class VHbbAnalyzer( Analyzer ):
                 return False
             if event.Vtype < 0 and not ( sum(x.pt() > 30 for x in event.jetsForHiggsAll) >= 4 or sum(x.pt() for x in event.jetsForHiggsAll[:4]) > self.cfg_ana.sumPtThreshold ):
                 return False
+        if getattr(self.cfg_ana,"ewkOnly",False) :
+            if event.Vtype < 0 or event.Vtype == 4 :
+                return False
+            jetsWithId= [x for x in event.jetsForHiggsAll if x.puJetId() > 0 and x.jetID('POG_PFID_Loose') ]
+            if len(jetsWithId) >= 2 :
+                if (jetsWithId[0].p4()+jetsWithId[1].p4()).M() < 170 :
+                    return False
+            else:
+              return False
+
         map(lambda x :x.qgl(),event.jetsForHiggsAll[:6])
         map(lambda x :x.qgl(),(x for x in event.jetsForHiggsAll if x.pt() > 30) )
 

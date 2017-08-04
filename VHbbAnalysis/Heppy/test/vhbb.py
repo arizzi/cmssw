@@ -147,7 +147,7 @@ treeProducer= cfg.Analyzer(
 
 		#dump of gen objects
                 #"generatorSummary"    : NTupleCollection("GenSummary", genParticleWithLinksType, 30, help="Generator summary, see description in Heppy GeneratorAnalyzer",mcOnly=True),
-                "genJets"    : NTupleCollection("GenJet",   genJetType, 15, help="Generated jets with hadron matching, sorted by pt descending",filter=lambda x: x.pt() > 20,mcOnly=True),
+                "genJets"    : NTupleCollection("GenJet",   genJetType, 15, help="Generated jets with hadron matching, sorted by pt descending",filter=lambda x: x.pt() > 8,mcOnly=True),
                 "vh_genHiggsSisters"    : NTupleCollection("GenHiggsSisters",     genParticleType, 4, help="Sisters of the Higgs bosons",mcOnly=True),
                 "vh_gentopquarks"    : NTupleCollection("GenTop",     genTopType, 4, help="Generated top quarks from hard scattering",mcOnly=True),
                 "vh_genallstatus2bhadrons"    : NTupleCollection("GenStatus2bHad",     genParticleType, 15, help="Generated Status 2 b Hadrons",mcOnly=True),
@@ -452,6 +452,7 @@ trigemu = cfg.Analyzer(
 VHbb = cfg.Analyzer(
     verbose=False,
     class_object=VHbbAnalyzer,
+    ewkOnly = True,
     wEleSelection = lambda x : x.pt() > 25 and getattr(x,"mvaIdSpring16GeneralPurposePOG80",False)     and ele_mvaEleID_Trig_preselection(x),
     wMuSelection = lambda x : x.pt() > 25 and x.muonID("POG_ID_Tight") and mu_pfRelIso04(x) < 0.15,
 #    zEleSelection = lambda x : x.pt() > 15 and getattr(x,"mvaIdSpring16GeneralPurposePOG80",False) and ele_mvaEleID_Trig_preselection(x),
@@ -609,7 +610,7 @@ sample = cfg.MCComponent(
 		# "root://cmsxrootd.fnal.gov///store/mc/RunIISummer16MiniAODv2/TT_TuneEE5C_13TeV-powheg-herwigpp/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/02656FC1-B0B5-E611-B2F9-44A842CFCA27.root",
 
 		# "root://cmsxrootd.fnal.gov///store/mc/RunIISummer16MiniAODv2/ggZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8_CUETP8M1Up/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/80000/D466A5FE-11CC-E611-AA18-842B2B17E3BA.root",
-		 "root://cmsxrootd.fnal.gov///store/mc/RunIISummer16MiniAODv2/ZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/60000/28CA6CC9-FEC2-E611-BF37-008CFA5D2758.root",
+		 "root://cmsxrootd.fnal.gov//store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root",
     ],
     # files = ["cmsswPreProcessing.root"],
     name="ZHLL125", isEmbed=False,
