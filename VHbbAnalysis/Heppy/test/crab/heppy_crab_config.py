@@ -2,8 +2,8 @@ from WMCore.Configuration import Configuration
 config = Configuration()
 
 config.section_("General")
-config.General.requestName = 'VHBB_V25b_005giulio'
-config.General.workArea = '/scratch/arizzi/crab_sub/crab_projects_V25b_005giulio'
+config.General.requestName = 'VHBB_V27'
+config.General.workArea = '/scratch/arizzi/crab_sub/crab_projects_V27'
 config.General.transferLogs=True
 
 config.section_("JobType")
@@ -50,11 +50,11 @@ config.Data.inputDBS = 'global'
 #config.Data.splitting = 'FileBased'
 config.Data.splitting = 'EventAwareLumiBased'
 config.Data.unitsPerJob = 50000
-config.Data.totalUnits = 1000000
+#config.Data.totalUnits = 1000000
 config.Data.allowNonValidInputDataset = True # to run on datasets in PRODUCTION
-config.Data.outLFNDirBase = '/store/user/arizzi/VHBBHeppyV25b/'
+config.Data.outLFNDirBase = '/store/user/arizzi/VHBBHeppyV27/'
 config.Data.publication = True
-config.Data.outputDatasetTag = 'VHHe_V25giulio'
+config.Data.outputDatasetTag = 'VH_V27'
 config.section_("Site")
 config.Site.blacklist = ['T2_ES_CIEMAT','T2_BR_SPRACE']
 #config.Site.storageSite = "T2_CH_CERN"

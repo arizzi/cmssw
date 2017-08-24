@@ -1,8 +1,8 @@
 from WMCore.Configuration import Configuration
 config = Configuration()
 
-version="V25b"
-submission="_008doubleAndJet"
+version="V27"
+submission="_001"
 
 config.section_("General")
 config.General.requestName = 'VHBB_HEPPY_'+version+submission

@@ -325,7 +325,8 @@ JetAna.jecPath=os.environ['CMSSW_BASE']+"/src/VHbbAnalysis/Heppy/data/jec"
 #JetAna.dataGT = "Fall15_25nsV2_DATA"
 
 JetAna.mcGT="Summer16_23Sep2016V4_MC"
-JetAna.dataGT="Summer16_23Sep2016GV4_DATA"
+JetAna.dataGT="Summer16_23Sep2016HV4_DATA"
+#JetAna.dataGT="Summer16_23Sep2016GV4_DATA"
 JetAna.addJECShifts=True
 JetAna.addJERShifts=True
 
@@ -610,7 +611,7 @@ sample = cfg.MCComponent(
 		# "root://cmsxrootd.fnal.gov///store/mc/RunIISummer16MiniAODv2/TT_TuneEE5C_13TeV-powheg-herwigpp/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/60000/02656FC1-B0B5-E611-B2F9-44A842CFCA27.root",
 
 		# "root://cmsxrootd.fnal.gov///store/mc/RunIISummer16MiniAODv2/ggZH_HToBB_ZToLL_M125_13TeV_powheg_pythia8_CUETP8M1Up/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/80000/D466A5FE-11CC-E611-AA18-842B2B17E3BA.root",
-		 "root://cmsxrootd.fnal.gov//store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root",
+		 "CA6D677C-B1EA-E611-8C6D-0CC47A13CC7A.root" #root://cmsxrootd.fnal.gov//store/mc/RunIISummer16MiniAODv2/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/MINIAODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v2/120000/02A210D6-F5C3-E611-B570-008CFA197BD4.root",
     ],
     # files = ["cmsswPreProcessing.root"],
     name="ZHLL125", isEmbed=False,

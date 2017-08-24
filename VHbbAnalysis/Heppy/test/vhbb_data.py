@@ -4,7 +4,7 @@ sample.isMC=False
 sample.isData=True
 sample.files=[
 # "file:00EA1DB2-90AA-E511-AEEE-0025905C2CE6.root"
- "F0B09550-7DEA-E611-A445-B8CA3A70A5E8.root"
+ "CA6D677C-B1EA-E611-8C6D-0CC47A13CC7A.root"
 #"root://cms-xrd-global.cern.ch//store/data/Run2016B/JetHT/MINIAOD/PromptReco-v2/000/273/150/00000/66051AAF-D819-E611-BD3D-02163E011D55.root"
 #/store/data/Run2015B/SingleMuon/MINIAOD/PromptReco-v1/000/251/162/00000/160C08A3-4227-E511-B829-02163E01259F.root"
 ]
