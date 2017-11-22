@@ -2069,9 +2069,9 @@ steps['NANOEDMMC2017'] = merge([{'--conditions': 'auto:phase1_2017_realistic', '
 steps['NANOEDMMC2017_92X'] = merge([{'--era': 'Run2_2017,run2_nanoAOD_92X'},       steps['NANOEDMMC2017'] ])
 steps['NANOEDMMC2016_80X'] = merge([{'--conditions': 'auto:run2_mc', '--era': 'Run2_2016,run2_miniAOD_80XLegacy'},       steps['NANOEDMMC2017'] ])
 
-steps['NANOEDM2017'] = merge([{'--conditions': 'auto:phase1_2017_realistic', '--era': 'Run2_2017'}, stepNanoEDMData ])
+steps['NANOEDM2017'] = merge([{'--conditions': 'auto:run2_data_relval', '--era': 'Run2_2017'}, stepNanoEDMData ])
 steps['NANOEDM2017_92X'] = merge([{'--era': 'Run2_2017,run2_nanoAOD_92X'},       steps['NANOEDM2017'] ])
-steps['NANOEDM2016_80X'] = merge([{'--conditions': 'auto:run2_mc', '--era': 'Run2_2016,run2_miniAOD_80XLegacy'},       steps['NANOEDM2017'] ])
+steps['NANOEDM2016_80X'] = merge([{'--conditions': 'auto:run2_data_relval', '--era': 'Run2_2016,run2_miniAOD_80XLegacy'},       steps['NANOEDM2017'] ])
 
 
 steps['NANOMERGE'] = { '-s': 'ENDJOB', '-n': 1000 , '--eventcontent' : 'NANOAODSIM','--datatier': 'NANOAODSIM', '--conditions': 'auto:run2_mc' }
