@@ -33,6 +33,37 @@ ptRatioRelForMu = cms.EDProducer("MuonJetVarProducer",
 )
 run2_miniAOD_80XLegacy.toModify(ptRatioRelForMu, srcLep = "slimmedMuonsUpdated")
 
+FSRforMu = cms.EDProducer("MuonFSRProducer",
+    packedPFCandidates = cms.InputTag("packedPFCandidates"),
+    slimmedMuons = cms.InputTag("slimmedMuons"),
+    slimmedElectrons = cms.InputTag("slimmedElectrons"),
+)
+run2_miniAOD_80XLegacy.toModify(FSRforMu, src = "slimmedMuonsUpdated")
+
+from FSRPhotonRecovery.FSRPhotons.FSRphotonSequence_cff import addFSRphotonSequence
+#addFSRphotonSequence(process, 'slimmedMuons', options.PhotonMVA)
+extractPhotons = cms.EDProducer("FSRPhotonProducer",
+                                            srcCands = cms.InputTag("packedPFCandidates"),
+                                            ptThresh = cms.double(1.0) ## will tighten to 2 at analysis level
+                                            )
+
+import PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi
+slimmedPFPhotons = PhysicsTools.PatAlgos.producersLayer1.pfParticleProducer_cfi.patPFParticles.clone(
+        pfCandidateSource = 'extractPhotons'
+        )
+
+FSRRecovery = cms.EDProducer("FSRRecoveryProducer",
+                                         pfcands = cms.InputTag("packedPFCandidates"),
+                                         muons = cms.InputTag("finalLooseMuons"),
+                                         electrons = cms.InputTag("slimmedElectrons"),
+                                         pfphotons = cms.InputTag("slimmedPFPhotons"),
+                                         patphotons = cms.InputTag("slimmedPhotons"),
+                                         weights = cms.string("FSRPhotonRecovery/FSRPhotons/data/PhotonMVAv9_BDTG800TreesDY.weights.xml")
+                                         )
+
+FSRphotonSequence = cms.Sequence(extractPhotons*slimmedPFPhotons*FSRRecovery)
+
+
 slimmedMuonsWithUserData = cms.EDProducer("PATMuonUserDataEmbedder",
      src = cms.InputTag("slimmedMuons"),
      userFloats = cms.PSet(
@@ -41,6 +72,11 @@ slimmedMuonsWithUserData = cms.EDProducer("PATMuonUserDataEmbedder",
         ptRatio = cms.InputTag("ptRatioRelForMu:ptRatio"),
         ptRel = cms.InputTag("ptRatioRelForMu:ptRel"),
         jetNDauChargedMVASel = cms.InputTag("ptRatioRelForMu:jetNDauChargedMVASel"),
+        ptFSR = cms.InputTag("FSRforMu:ptFSR"), 
+        etaFSR = cms.InputTag("FSRforMu:etaFSR"), 
+        phiFSR = cms.InputTag("FSRforMu:phiFSR"), 
+        isoCHSFSR = cms.InputTag("FSRforMu:isoCHSFSR"), 
+        isoFSR = cms.InputTag("FSRforMu:isoFSR"), 
      ),
      userCands = cms.PSet(
         jetForLepJetVar = cms.InputTag("ptRatioRelForMu:jetForLepJetVar") # warning: Ptr is null if no match is found
@@ -115,6 +151,11 @@ muonTable = cms.EDProducer("SimpleCandidateFlatTableProducer",
         tkRelIso = Var("isolationR03().sumPt/tunePMuonBestTrack().pt",float,doc="Tracker-based relative isolation dR=0.3 for highPt, trkIso/tunePpt",precision=6),
         miniPFRelIso_chg = Var("userFloat('miniIsoChg')/pt",float,doc="mini PF relative isolation, charged component"),
         miniPFRelIso_all = Var("userFloat('miniIsoAll')/pt",float,doc="mini PF relative isolation, total (with scaled rho*EA PU corrections)"),
+        pt_FSR = Var("userFloat('ptFSR')",float,doc="pt of the FSR photon associated to the muon"),                 
+        eta_FSR = Var("userFloat('etaFSR')",float,doc="eta of the FSR photon associated to the muon"),                 
+        phi_FSR = Var("userFloat('phiFSR')",float,doc="phi of the FSR photon associated to the muon"),                 
+        iso_FSR = Var("userFloat('isoFSR')",float,doc="isolation of the FSR photon associated to the muon"),                 
+        isoCHS_FSR = Var("userFloat('isoCHSFSR')",float,doc="isolation CHS of the FSR photon associated to the muon"),                 
         pfRelIso03_chg = Var("pfIsolationR03().sumChargedHadronPt/pt",float,doc="PF relative isolation dR=0.3, charged component"),
         pfRelIso03_all = Var("(pfIsolationR03().sumChargedHadronPt + max(pfIsolationR03().sumNeutralHadronEt + pfIsolationR03().sumPhotonEt - pfIsolationR03().sumPUPt/2,0.0))/pt",float,doc="PF relative isolation dR=0.3, total (deltaBeta corrections)"),
         pfRelIso04_all = Var("(pfIsolationR04().sumChargedHadronPt + max(pfIsolationR04().sumNeutralHadronEt + pfIsolationR04().sumPhotonEt - pfIsolationR04().sumPUPt/2,0.0))/pt",float,doc="PF relative isolation dR=0.4, total (deltaBeta corrections)"),
@@ -173,11 +214,30 @@ muonMCTable = cms.EDProducer("CandMCMatchTableProducer",
     docString = cms.string("MC matching to status==1 muons"),
 )
 
-muonSequence = cms.Sequence(isoForMu + ptRatioRelForMu + slimmedMuonsWithUserData + finalMuons + finalLooseMuons)
+fsrTable = cms.EDProducer("SimpleCandidateFlatTableProducer",
+    src     = cms.InputTag("FSRRecovery", "selectedFSRphotons"),
+    name = cms.string("FSR"),
+    cut = cms.string(""), #we should not filter on cross linked collections
+
+    singleton = cms.bool(False), # the number of entries is variable
+    extension = cms.bool(False), # this is the main table for the muons
+
+    docString = cms.string("FSR photons"),
+        variables = cms.PSet(CandVars,
+        mva= Var("userFloat('FSRphotonMVAValue')",float,doc="photonMVAValue of the FSR photon "),
+        iso03= Var("userFloat('PFphotonIso03')",float,doc="PFphotonIso03 of the FSR photon "),
+        etDr= Var("userFloat('ETgammadeltaR')",float,doc="ETgammadeltaR of the FSR photon "),
+        muonIdx = Var("?hasUserCand('associatedMuon')?userCand('associatedMuon').key():-1", int, doc="index of the associated muon (-1 if none)"),
+   )
+)
+
+
+muonSequence = cms.Sequence(isoForMu + FSRforMu + ptRatioRelForMu + slimmedMuonsWithUserData + finalMuons + finalLooseMuons + FSRphotonSequence)
 muonMC = cms.Sequence(muonsMCMatchForTable + muonMCTable)
-muonTables = cms.Sequence(muonMVATTH + muonMVALowPt + muonTable)
+muonTables = cms.Sequence(muonMVATTH + muonMVALowPt + muonTable + fsrTable)
 
 _withUpdate_sequence = muonSequence.copy()
 _withUpdate_sequence.replace(isoForMu, slimmedMuonsUpdated+isoForMu)
 run2_miniAOD_80XLegacy.toReplaceWith(muonSequence, _withUpdate_sequence)
+
 

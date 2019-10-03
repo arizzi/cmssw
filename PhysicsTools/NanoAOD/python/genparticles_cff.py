@@ -23,6 +23,7 @@ finalGenParticles = cms.EDProducer("GenParticlePruner",
         "keep abs(pdgId) == 23 || abs(pdgId) == 24 || abs(pdgId) == 25 || abs(pdgId) == 37 ",   # keep VIP(articles)s
         #"keep abs(pdgId) == 310 && abs(eta) < 2.5 && pt > 1 ",                                                     # keep K0
         "keep (1000001 <= abs(pdgId) <= 1000039 ) || ( 2000001 <= abs(pdgId) <= 2000015)", #keep SUSY fiction particles
+        "keep ((1 <= abs(pdgId) <= 5 ) || ( abs(pdgId) == 21)) && (status==11)", #workaround for herwig
  		
    )
 )
