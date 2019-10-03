@@ -75,22 +75,22 @@ PileupJetIdAlgo::AlgoGBRForestsAndConstants::AlgoGBRForestsAndConstants(edm::Par
       std::vector<double> pt2030 = jetConfig.getParameter<std::vector<double> >(("Pt2030_"+lFullCutType).c_str());
       std::vector<double> pt3050 = jetConfig.getParameter<std::vector<double> >(("Pt3050_"+lFullCutType).c_str());
       if (!cutBased_) {
-        for (int i2 = 0; i2 < 4; i2++) mvacut_[i0][0][i2] = pt010 [i2];
-        for (int i2 = 0; i2 < 4; i2++) mvacut_[i0][1][i2] = pt1020[i2];
-        for (int i2 = 0; i2 < 4; i2++) mvacut_[i0][2][i2] = pt2030[i2];
-        for (int i2 = 0; i2 < 4; i2++) mvacut_[i0][3][i2] = pt3050[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) mvacut_[i0][0][i2] = pt010 [i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) mvacut_[i0][1][i2] = pt1020[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) mvacut_[i0][2][i2] = pt2030[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) mvacut_[i0][3][i2] = pt3050[i2];
       }
       if (cutBased_ && i1 == 0) {
-        for (int i2 = 0; i2 < 4; i2++) betaStarCut_[i0][0][i2] = pt010 [i2];
-        for (int i2 = 0; i2 < 4; i2++) betaStarCut_[i0][1][i2] = pt1020[i2];
-        for (int i2 = 0; i2 < 4; i2++) betaStarCut_[i0][2][i2] = pt2030[i2];
-        for (int i2 = 0; i2 < 4; i2++) betaStarCut_[i0][3][i2] = pt3050[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) betaStarCut_[i0][0][i2] = pt010 [i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) betaStarCut_[i0][1][i2] = pt1020[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) betaStarCut_[i0][2][i2] = pt2030[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) betaStarCut_[i0][3][i2] = pt3050[i2];
       }
       if (cutBased_ && i1 == 1) {
-        for (int i2 = 0; i2 < 4; i2++) rmsCut_[i0][0][i2] = pt010 [i2];
-        for (int i2 = 0; i2 < 4; i2++) rmsCut_[i0][1][i2] = pt1020[i2];
-        for (int i2 = 0; i2 < 4; i2++) rmsCut_[i0][2][i2] = pt2030[i2];
-        for (int i2 = 0; i2 < 4; i2++) rmsCut_[i0][3][i2] = pt3050[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) rmsCut_[i0][0][i2] = pt010 [i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) rmsCut_[i0][1][i2] = pt1020[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) rmsCut_[i0][2][i2] = pt2030[i2];
+        for (int i2 = 0; i2 < nEtaBins_; i2++) rmsCut_[i0][3][i2] = pt3050[i2];
       }
     }
   }
@@ -213,9 +213,11 @@ std::pair<int,int> PileupJetIdAlgo::getJetIdKey(float jetPt, float jetEta)
   if(jetPt >= 30              ) ptId = 3;                                                                                          
   
   int etaId = 0;
-  if(std::abs(jetEta) >= 2.5  && std::abs(jetEta) < 2.75) etaId = 1;                                                              
-  if(std::abs(jetEta) >= 2.75 && std::abs(jetEta) < 3.0 ) etaId = 2;                                                              
-  if(std::abs(jetEta) >= 3.0  && std::abs(jetEta) < 5.0 ) etaId = 3;                                 
+  for(int v = 0; v < cache_->nEtaBins(); v++){
+      if(std::abs(jetEta) >= cache_->jEtaMin().at(v) && std::abs(jetEta) < cache_->jEtaMax().at(v)) {
+          etaId = v;
+      }
+  }
 
   return std::pair<int,int>(ptId,etaId);
 }
