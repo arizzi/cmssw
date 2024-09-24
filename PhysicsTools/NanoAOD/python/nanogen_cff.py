@@ -105,6 +105,8 @@ def customizeNanoGEN(process):
     process.nanogenSequence.remove(process.genParticles2HepMCHiggsVtx)
     process.nanogenSequence.remove(process.genParticles2HepMC)
     process.nanogenSequence.remove(process.mergedGenParticles)
+    pruneGenParticlesMini(process)
+    pruneGenParticlesNano(process)
     nanoGenCommonCustomize(process)
     return process
 
