@@ -114,14 +114,14 @@ def customizeNanoGEN(process):
 def pruneGenParticlesNano(process):
     process.finalGenParticles.src = process.genParticleTable.src.getModuleLabel()
     process.genParticleTable.src = "finalGenParticles"
-    process.nanogenSequence.insert(0, process.finalGenParticles)
+    process.nanogenSequence.insert(1, process.finalGenParticles)
     return process
 
 # Prune gen particles with conditions applied in usual MiniAOD
 def pruneGenParticlesMini(process):
-    if process.nanogenSequence.contains(process.mergedGenParticles):
-        raise ValueError("Applying the MiniAOD genParticle pruner to MiniAOD is redunant. " \
-            "Use a different customization.")
+#    if process.nanogenSequence.contains(process.mergedGenParticles):
+#        raise ValueError("Applying the MiniAOD genParticle pruner to MiniAOD is redunant. " \
+#            "Use a different customization.")
     from PhysicsTools.PatAlgos.slimming.prunedGenParticles_cfi import prunedGenParticles
     process.prunedGenParticles = prunedGenParticles.clone()
     process.prunedGenParticles.src = "genParticles"
