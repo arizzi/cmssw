@@ -110,4 +110,6 @@ autoNANO = {
     # NANOGEN (from MiniAOD)
     'GENFromMini': {'sequence': 'PhysicsTools/NanoAOD/nanogen_cff.nanogenSequence',
                     'customize': 'PhysicsTools/NanoAOD/nanogen_cff.customizeNanoGENFromMini'},
+    'GENMinimal': {'sequence': 'PhysicsTools/NanoAOD/nanogen_cff.nanogenSequence',
+            'customize': 'PhysicsTools/NanoAOD/nanogen_cff.customizeNanoGENMinimal'},
 }
