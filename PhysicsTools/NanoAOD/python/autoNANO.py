@@ -121,6 +121,10 @@ autoNANO = {
     # NANOGEN as in same GEN content of regular NANOAODSIM
     'GENMinimal': {'sequence': 'PhysicsTools/NanoAOD/nanogen_cff.nanogenSequence',
             'customize': 'PhysicsTools/NanoAOD/nanogen_cff.customizeNanoGENMinimal'},
+    'NANOAODGEN': {
+        'sequence': 'PhysicsTools/NanoAOD/nanogen_cff.nanogenSequence',
+        'customize': 'PhysicsTools/NanoAOD/nanoaodgen_cff.customizeNanoAodGEN'
+    },
     # Tau embedding NanoAOD (includes Data as well as MC tables with an addition tau embedding table)
     'TauEmbedding': {'sequence': '@PHYS+PhysicsTools/NanoAOD/nano_cff.nanoSequenceFS+TauAnalysis/MCEmbeddingTools/Nano_cff.embeddingTable_seq',
                      'customize': '@PHYS'},
