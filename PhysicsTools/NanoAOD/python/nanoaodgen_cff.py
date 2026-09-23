@@ -42,8 +42,7 @@ from PhysicsTools.NanoAOD.particlelevel_cff import (
 )
 
 
-def customizeNanoAodGEN(process):
-    isFromGEN = hasattr(process, "genParticles") or hasattr(process, "generator")
+def _customizeNanoAodGEN(process, isFromGEN=True):
     genTask = cms.Task()
 
     # ----------------------------------------------------
@@ -59,7 +58,7 @@ def customizeNanoAodGEN(process):
             inputOriginal = "genParticles",
         )
         process.finalGenParticles = finalGenParticles.clone(src = "prunedGenParticles")
-        
+
         # Produce generator isolation
         process.genIso = genIso.clone(
             genPart = "finalGenParticles",
@@ -90,11 +89,7 @@ def customizeNanoAodGEN(process):
     # 2. GenJets (AK4, AK8, TrackGenJets & Soft Activity)
     # ----------------------------------------------------
     if isFromGEN:
-        # MiniAOD slimmers to provide slimmedGenJets & substructure from recoGenJets
-        if not hasattr(process, "ak4GenJetsNoNu"):
-            process.load("RecoJets.Configuration.RecoGenJets_cff")
-            genTask.add(process.recoGenJetsNoNuTask)
-
+        # ak4GenJetsNoNu and ak8GenJetsNoNu already exist (from pgen or step_gen.root)
         process.slimmedGenJets = slimmedGenJets.clone(src = "ak4GenJetsNoNu", cut = "pt > 8")
         process.slimmedGenJetsAK8 = slimmedGenJetsAK8.clone(src = "ak8GenJetsNoNu", cut = "pt > 100")
         process.ak8GenJetsNoNuConstituents = ak8GenJetsConstituents.clone(src = "ak8GenJetsNoNu")
@@ -132,7 +127,6 @@ def customizeNanoAodGEN(process):
     )
     genTask.add(process.genMetTable)
 
-
     # ----------------------------------------------------
     # 4. Visible GenTaus (GenVisTau)
     # ----------------------------------------------------
@@ -158,8 +152,9 @@ def customizeNanoAodGEN(process):
         process.genVisTaus,
         process.genVisTauTable,
     )
+
     # ----------------------------------------------------
-    # 5. Event Weights, LHE Info 
+    # 5. Event Weights & LHE Info
     # ----------------------------------------------------
     process.genTable = genTable.clone()
     process.genWeightsTable = genWeightsTable.clone()
@@ -211,8 +206,19 @@ def customizeNanoAodGEN(process):
     process.nanogenTask = genTask
     process.nanogenSequence = cms.Sequence(process.nanogenTask)
 
+    if hasattr(process, "nanoAOD_step"):
+        process.nanoAOD_step.associate(genTask)
+
     for outName in ["NANOEDMAODSIMoutput", "NANOAODSIMoutput"]:
         if hasattr(process, outName):
             getattr(process, outName).outputCommands.append("drop edmTriggerResults_*_*_*")
 
     return process
+
+
+def customizeNanoAodGEN(process):
+    return _customizeNanoAodGEN(process, isFromGEN=True)
+
+
+def customizeNanoAodGENFromMini(process):
+    return _customizeNanoAodGEN(process, isFromGEN=False)
